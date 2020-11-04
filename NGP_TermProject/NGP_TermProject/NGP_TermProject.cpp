@@ -17,6 +17,8 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+void DrawBackground(HWND,int,int,int,int,HDC,HDC);
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -98,7 +100,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      0, 0, 800, 600, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -144,35 +146,57 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
-            PAINTSTRUCT ps;
-            HDC hdc, memDC, backDC;
-            // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-            HBITMAP BackBit, oldBackBit;
-            HBITMAP MyBitmap;
-            RECT bufferRT;
+        PAINTSTRUCT ps;
+        HDC hdc, memDC, backDC;
+        // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
+        HBITMAP BackBit, oldBackBit;
+        
+        RECT bufferRT;
 
-            hdc = BeginPaint(hWnd, &ps);
-            memDC = CreateCompatibleDC(hdc);
-            backDC = CreateCompatibleDC(hdc);
+        hdc = BeginPaint(hWnd, &ps);
+        memDC = CreateCompatibleDC(hdc);
+        backDC = CreateCompatibleDC(hdc);
 
-            GetClientRect(hWnd, &bufferRT);
+        GetClientRect(hWnd, &bufferRT);
 
-            BackBit = CreateCompatibleBitmap(hdc, bufferRT.right, bufferRT.bottom);
-            oldBackBit = (HBITMAP)SelectObject(backDC, BackBit);
-            FillRect(backDC, &bufferRT, (HBRUSH)GetStockObject(WHITE_BRUSH));
+        BackBit = CreateCompatibleBitmap(hdc, bufferRT.right, bufferRT.bottom);
+        oldBackBit = (HBITMAP)SelectObject(backDC, BackBit);
+        FillRect(backDC, &bufferRT, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
-            MyBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP1));
-            SelectObject(memDC, MyBitmap);
+        DrawBackground(hWnd, 50, 50, bufferRT.right - 200, bufferRT.bottom - 150, memDC, backDC);
+        // left, top, right, bottom,
 
-            BitBlt(backDC, 50, 50, bufferRT.right - 100, bufferRT.bottom - 100, memDC, 0, 0, SRCCOPY);
+        //test/////////////////////////////
+
+        Rectangle(backDC, 50, 30, bufferRT.right - 150, 50);
+        // hp bar
+        Rectangle(backDC, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 100);
+        // skill bar
+        Rectangle(backDC, 50, bufferRT.bottom - 100, bufferRT.right - 50, bufferRT.bottom - 50);
+        // mp bar
+
+        int x, y, x1, y2;
+        x = (rand() % (bufferRT.right - 150)) + 50 + 300;
+        x1 = (rand() % (bufferRT.right - 150)) + 50;
+        y = (rand() % (bufferRT.bottom - 200)) + 50;
+        y2 = (rand() % (bufferRT.bottom - 200)) + 50;
+
+        Rectangle(backDC, x,y,x+10,y+10);
+        Rectangle(backDC, x1,y2,x1+10,y2+10);
+
+        //test//////////////////////////////// 
 
 
-            BitBlt(hdc, 0, 0, bufferRT.right, bufferRT.bottom, backDC, 0, 0, SRCCOPY);
+        BitBlt(hdc, 0, 0, bufferRT.right, bufferRT.bottom, backDC, 0, 0, SRCCOPY);
 
-            SelectObject(hdc, oldBackBit);
-            DeleteObject(BackBit);
-            DeleteDC(hdc);
-            EndPaint(hWnd, &ps);
+        SelectObject(hdc, oldBackBit);
+        DeleteObject(BackBit);
+        DeleteDC(hdc);
+        EndPaint(hWnd, &ps);
+
+
+        
+            
         }
         break;
     case WM_DESTROY:
@@ -202,4 +226,13 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+void DrawBackground(HWND hWnd,int left, int top, int right, int bottom, HDC hdc, HDC dest) {
+    HBITMAP MyBitmap;
+
+    MyBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP1));
+    SelectObject(hdc, MyBitmap);
+
+    BitBlt(dest, left, top,right,bottom, hdc, 0, 0, SRCCOPY);
 }
