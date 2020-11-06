@@ -18,6 +18,8 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 void DrawBackground(HWND,int,int,int,int,HDC,HDC);
+void DrawCharater1(HWND,  HDC, HDC);
+void DrawCharater2(HWND,  HDC, HDC);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -165,6 +167,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         DrawBackground(hWnd, 50, 50, bufferRT.right - 200, bufferRT.bottom - 150, memDC, backDC);
         // left, top, right, bottom,
+        DrawCharater1(hWnd,  memDC, backDC);
+        DrawCharater2(hWnd, memDC, backDC);
 
         //test/////////////////////////////
 
@@ -235,4 +239,24 @@ void DrawBackground(HWND hWnd,int left, int top, int right, int bottom, HDC hdc,
     SelectObject(hdc, MyBitmap);
 
     BitBlt(dest, left, top,right,bottom, hdc, 0, 0, SRCCOPY);
+}
+
+void DrawCharater1(HWND hWnd,  HDC hdc, HDC dest) {
+    HBITMAP MyBitmap;
+    MyBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2));
+    SelectObject(hdc, MyBitmap);
+    
+    TransparentBlt(dest, 60, 200, 80, 80, hdc, 0, 0, 80, 80, RGB(255, 255, 255));
+
+}
+
+void DrawCharater2(HWND hWnd, HDC hdc, HDC dest) {
+    HBITMAP MyBitmap;
+    MyBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP3));
+    SelectObject(hdc, MyBitmap);
+  
+
+    TransparentBlt(dest, 550, 200, 80, 80, hdc, 0, 0, 80, 80, RGB(255, 255, 255));
+
+
 }

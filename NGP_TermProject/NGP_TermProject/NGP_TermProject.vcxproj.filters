@@ -48,5 +48,20 @@
     <Image Include="Background.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="bitmap2.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Character.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="bitmap3.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="character1.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="character2.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
 </Project>

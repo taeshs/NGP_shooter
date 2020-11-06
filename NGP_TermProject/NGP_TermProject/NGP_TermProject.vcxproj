@@ -92,6 +92,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>Msimg32.lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -145,13 +147,20 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="NGP_TermProject.cpp" />
+    <ClCompile Include="NGP_TermProject.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">msimg32.lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NGP_TermProject.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Background.bmp" />
+    <Image Include="bitmap2.bmp" />
+    <Image Include="bitmap3.bmp" />
+    <Image Include="Character.bmp" />
+    <Image Include="character1.bmp" />
+    <Image Include="character2.bmp" />
     <Image Include="NGP_TermProject.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
