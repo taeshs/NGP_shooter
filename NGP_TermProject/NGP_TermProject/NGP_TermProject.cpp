@@ -17,14 +17,14 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-void DrawBackground(HWND,int,int,int,int,HDC,HDC);
-void DrawCharater1(HWND,  HDC, HDC);
-void DrawCharater2(HWND,  HDC, HDC);
+void DrawBackground(HWND, int, int, int, int, HDC, HDC);
+void DrawCharater1(HWND, POINT, HDC, HDC);
+void DrawCharater2(HWND, POINT, HDC, HDC);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPWSTR    lpCmdLine,
+    _In_ int       nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
@@ -37,7 +37,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MyRegisterClass(hInstance);
 
     // 애플리케이션 초기화를 수행합니다:
-    if (!InitInstance (hInstance, nCmdShow))
+    if (!InitInstance(hInstance, nCmdShow))
     {
         return FALSE;
     }
@@ -56,7 +56,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     }
 
-    return (int) msg.wParam;
+    return (int)msg.wParam;
 }
 
 
@@ -72,17 +72,17 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_NGPTERMPROJECT));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_NGPTERMPROJECT);
-    wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = WndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_NGPTERMPROJECT));
+    wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_NGPTERMPROJECT);
+    wcex.lpszClassName = szWindowClass;
+    wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     return RegisterClassExW(&wcex);
 }
@@ -99,20 +99,20 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      0, 0, 800, 600, nullptr, nullptr, hInstance, nullptr);
+    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+        0, 0, 800, 600, nullptr, nullptr, hInstance, nullptr);
 
-   if (!hWnd)
-   {
-      return FALSE;
-   }
+    if (!hWnd)
+    {
+        return FALSE;
+    }
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+    ShowWindow(hWnd, nCmdShow);
+    UpdateWindow(hWnd);
 
-   return TRUE;
+    return TRUE;
 }
 
 //
@@ -127,32 +127,61 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    static POINT P1, P2;
+    P1.x = 60, P1.y = 200, P2.x = 550, P2.y = 200;
+
+
     switch (message)
     {
     case WM_COMMAND:
+    {
+        int wmId = LOWORD(wParam);
+        // 메뉴 선택을 구문 분석합니다:
+        switch (wmId)
         {
-            int wmId = LOWORD(wParam);
-            // 메뉴 선택을 구문 분석합니다:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
+        case IDM_ABOUT:
+            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+            break;
+        case IDM_EXIT:
+            DestroyWindow(hWnd);
+            break;
+        default:
+            return DefWindowProc(hWnd, message, wParam, lParam);
         }
-        break;
-    case WM_PAINT:
+    }
+    break;
+    case WM_KEYDOWN:
+        switch (wParam)
         {
+        case VK_UP:
+            P1.y -= 5;
+            break;
+
+        case VK_DOWN:
+
+            P1.y += 5;
+            break;
+
+
+        case VK_LEFT:
+            P1.x -= 5;
+            break;
+
+        case VK_RIGHT:
+
+            P1.x += 5;
+            break;
+
+        }
+
+        InvalidateRect(hWnd, NULL, TRUE);
+    case WM_PAINT:
+    {
         PAINTSTRUCT ps;
         HDC hdc, memDC, backDC;
         // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
         HBITMAP BackBit, oldBackBit;
-        
+
         RECT bufferRT;
 
         hdc = BeginPaint(hWnd, &ps);
@@ -167,8 +196,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         DrawBackground(hWnd, 50, 50, bufferRT.right - 200, bufferRT.bottom - 150, memDC, backDC);
         // left, top, right, bottom,
-        DrawCharater1(hWnd,  memDC, backDC);
-        DrawCharater2(hWnd, memDC, backDC);
+        DrawCharater1(hWnd, P1, memDC, backDC);
+        DrawCharater2(hWnd, P2, memDC, backDC);
 
         //test/////////////////////////////
 
@@ -185,8 +214,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         y = (rand() % (bufferRT.bottom - 200)) + 50;
         y2 = (rand() % (bufferRT.bottom - 200)) + 50;
 
-        Rectangle(backDC, x,y,x+10,y+10);
-        Rectangle(backDC, x1,y2,x1+10,y2+10);
+        Rectangle(backDC, x, y, x + 10, y + 10);
+        Rectangle(backDC, x1, y2, x1 + 10, y2 + 10);
 
         //test//////////////////////////////// 
 
@@ -199,10 +228,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         EndPaint(hWnd, &ps);
 
 
-        
-            
-        }
-        break;
+    }
+
+    break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
@@ -232,31 +260,32 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
-void DrawBackground(HWND hWnd,int left, int top, int right, int bottom, HDC hdc, HDC dest) {
+void DrawBackground(HWND hWnd, int left, int top, int right, int bottom, HDC hdc, HDC dest) {
     HBITMAP MyBitmap;
 
     MyBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP1));
     SelectObject(hdc, MyBitmap);
 
-    BitBlt(dest, left, top,right,bottom, hdc, 0, 0, SRCCOPY);
+    BitBlt(dest, left, top, right, bottom, hdc, 0, 0, SRCCOPY);
 }
 
-void DrawCharater1(HWND hWnd,  HDC hdc, HDC dest) {
+void DrawCharater1(HWND hWnd, POINT player, HDC hdc, HDC dest) {
     HBITMAP MyBitmap;
     MyBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2));
     SelectObject(hdc, MyBitmap);
-    
-    TransparentBlt(dest, 60, 200, 80, 80, hdc, 0, 0, 80, 80, RGB(255, 255, 255));
+
+    TransparentBlt(dest, player.x, player.y, 80, 80, hdc, 0, 0, 80, 80, RGB(255, 255, 255));
+
 
 }
 
-void DrawCharater2(HWND hWnd, HDC hdc, HDC dest) {
+void DrawCharater2(HWND hWnd, POINT player, HDC hdc, HDC dest) {
     HBITMAP MyBitmap;
     MyBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP3));
     SelectObject(hdc, MyBitmap);
-  
 
-    TransparentBlt(dest, 550, 200, 80, 80, hdc, 0, 0, 80, 80, RGB(255, 255, 255));
+
+    TransparentBlt(dest, player.x, player.y, 80, 80, hdc, 0, 0, 80, 80, RGB(255, 255, 255));
 
 
 }
