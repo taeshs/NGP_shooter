@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "NGP_TermProject.h"
 
+
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -20,6 +21,8 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 void DrawBackground(HWND, int, int, int, int, HDC, HDC);
 void DrawCharater1(HWND, POINT, HDC, HDC);
 void DrawCharater2(HWND, POINT, HDC, HDC);
+
+static POINT P1, P2;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
@@ -127,12 +130,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    static POINT P1, P2;
-    P1.x = 60, P1.y = 200, P2.x = 550, P2.y = 200;
-
 
     switch (message)
     {
+    case WM_CREATE:
+    {
+        P1.x = 60, P1.y = 200, P2.x = 550, P2.y = 200;
+    }
     case WM_COMMAND:
     {
         int wmId = LOWORD(wParam);
@@ -151,6 +155,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
     case WM_KEYDOWN:
+    {
         switch (wParam)
         {
         case VK_UP:
@@ -174,7 +179,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         }
 
-        InvalidateRect(hWnd, NULL, TRUE);
+        InvalidateRect(hWnd, NULL, FALSE);
+    }
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
