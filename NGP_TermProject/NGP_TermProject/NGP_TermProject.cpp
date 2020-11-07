@@ -214,15 +214,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         Rectangle(backDC, 50, bufferRT.bottom - 100, bufferRT.right - 50, bufferRT.bottom - 50);
         // mp bar
 
-        int x, y, x1, y2;
-        x = (rand() % (bufferRT.right - 150)) + 50 + 300;
-        x1 = (rand() % (bufferRT.right - 150)) + 50;
-        y = (rand() % (bufferRT.bottom - 200)) + 50;
-        y2 = (rand() % (bufferRT.bottom - 200)) + 50;
-
-        Rectangle(backDC, x, y, x + 10, y + 10);
-        Rectangle(backDC, x1, y2, x1 + 10, y2 + 10);
-
         //test//////////////////////////////// 
 
 
