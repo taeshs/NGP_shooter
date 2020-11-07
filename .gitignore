@@ -56,7 +56,5 @@ Mkfile.old
 dkms.conf
 
 .vs/
-NGP_TermProject/NGP_TermProject/Debug/
-NGP_TermProject/NGP_TermProject/x64/
-NGP_TermProject/Debug/
-NGP_TermProject/x64/
+**/NGP_TermProject/Debug/
+**/NGP_TermProject/x64/

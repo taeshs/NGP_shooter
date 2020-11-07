@@ -1,3 +1,0 @@
-﻿  NGP_TermProject.cpp
-NGP_TermProject.obj : error LNK2019: __imp_TransparentBlt"void __cdecl DrawCharater1(struct HWND__ *,struct tagPOINT,struct HDC__ *,struct HDC__ *)" (?DrawCharater1@@YAXPEAUHWND__@@UtagPOINT@@PEAUHDC__@@2@Z) 함수에서 참조되는 확인할 수 없는 외부 기호
-C:\Users\stevie\Desktop\넷겜\텀프\NetworkGameTermProject\NGP_TermProject\x64\Debug\NGP_TermProject.exe : fatal error LNK1120: 1개의 확인할 수 없는 외부 참조입니다.
