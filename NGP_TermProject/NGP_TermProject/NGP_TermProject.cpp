@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "NGP_TermProject.h"
+#include "Global.h"
 
 
 #define MAX_LOADSTRING 100
@@ -131,11 +132,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 
+
     switch (message)
     {
     case WM_CREATE:
     {
         P1.x = 60, P1.y = 200, P2.x = 550, P2.y = 200;
+        //static int nTime = 0;
+        SetTimer(hWnd, 0, 1000, NULL);
     }
     case WM_COMMAND:
     {
@@ -152,6 +156,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);
         }
+    }
+    break;
+    case WM_TIMER:
+    {
+        nTime += 5;
+
+        InvalidateRect(hWnd, NULL, true);
+
+        
     }
     break;
     case WM_KEYDOWN:
@@ -194,7 +207,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         memDC = CreateCompatibleDC(hdc);
         backDC = CreateCompatibleDC(hdc);
 
+
         GetClientRect(hWnd, &bufferRT);
+
+        int mp_gage = (bufferRT.right - 50) / 50;
 
         BackBit = CreateCompatibleBitmap(hdc, bufferRT.right, bufferRT.bottom);
         oldBackBit = (HBITMAP)SelectObject(backDC, BackBit);
@@ -207,11 +223,50 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         //test/////////////////////////////
 
-        Rectangle(backDC, 50, 30, bufferRT.right - 150, 50);
-        // hp bar
+        HPEN myPen, oldPen;
+        HBRUSH myBrush, oldBrush;
+
+        myPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+
+        oldPen = (HPEN)SelectObject(backDC, myPen);
+        myBrush = CreateSolidBrush(RGB(255, 0, 0));
+        oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
+
+        Rectangle(backDC, 50, 30, (bufferRT.right - 150)/2, 50);
+
+        SelectObject(backDC, oldPen);
+        SelectObject(backDC, oldBrush);
+
+
+        myBrush = CreateSolidBrush(RGB(0, 0, 255));
+        oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
+        Rectangle(backDC, (bufferRT.right - 150) / 2, 30, bufferRT.right - 150, 50);
+
+        SelectObject(backDC, oldPen);
+        SelectObject(backDC, oldBrush);
+
+        // hp bar right를 hp비율로 나눔
+        
+
         Rectangle(backDC, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 100);
         // skill bar
-        Rectangle(backDC, 50, bufferRT.bottom - 100, bufferRT.right - 50, bufferRT.bottom - 50);
+
+        myBrush = CreateSolidBrush(RGB(0, 255, 0));
+        oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
+
+        if (50+mp_gage * nTime < bufferRT.right - 50)
+            Rectangle(backDC, 50, bufferRT.bottom - 100, 50 + mp_gage* nTime, bufferRT.bottom - 50);
+        else
+            Rectangle(backDC, 50, bufferRT.bottom - 100, bufferRT.right - 50, bufferRT.bottom - 50);
+
+
+        SelectObject(backDC, oldPen);
+        SelectObject(backDC, oldBrush);
+
+        //쓰고난 펜을 삭제해준다.
+        DeleteObject(myPen);
+        DeleteObject(myBrush);
+
         // mp bar
 
         //test//////////////////////////////// 
@@ -230,6 +285,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
     case WM_DESTROY:
         PostQuitMessage(0);
+        KillTimer(hWnd, 0);
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
