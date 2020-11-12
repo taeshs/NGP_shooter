@@ -162,7 +162,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         nTime += 5;
 
-        InvalidateRect(hWnd, NULL, true);
+        InvalidateRect(hWnd, NULL, false);
 
         
     }
