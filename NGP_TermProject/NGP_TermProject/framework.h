@@ -13,3 +13,47 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include "Player.h"
+
+
+struct vector2 {
+    int x, y;
+};
+
+class Timer {
+public:
+    Timer() { QueryPerformanceFrequency(&g_tSecond); QueryPerformanceCounter(&g_tTime); }
+
+    float deltaTime(){
+        LARGE_INTEGER tTime;
+        QueryPerformanceCounter(&tTime);
+
+        g_fDeltaTime = (tTime.QuadPart - g_tTime.QuadPart) / (float)g_tSecond.QuadPart;
+
+        g_tTime = tTime;
+
+        return g_fDeltaTime;
+    }
+private:
+    LARGE_INTEGER g_tSecond;
+
+    LARGE_INTEGER g_tTime;
+
+    float g_fDeltaTime;
+};
+
+
+/*
+일정
+서버 - 로비 - 로그인 순 추천
+
+프레임 수 60? 30?
+
+단계별로 진행하자
+
+데이터 사이즈가 작아 nagle 알고리즘 때문에 안될수 있다.
+
+원격 네트워크 전송이 안될땐 네트워크 설정 (방화벽) 체크
+원격 네트워크 테스트 해볼것.
+*/
+
