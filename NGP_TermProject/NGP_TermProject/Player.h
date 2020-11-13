@@ -11,13 +11,16 @@ public:
 	float getX() { return posX; }
 	float getY() { return posY; }
 
-	float velocity = 0;
+
+	float velocity = 50.f;
+	
 
 private:
 	float posX;
 	float posY;
 
-	
+	int maxHp;
+	int maxMp;
 
 	int hp;
 	int mp;

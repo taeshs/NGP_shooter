@@ -3,6 +3,8 @@
 
 #include "framework.h"
 #include "NGP_TermProject.h"
+#pragma comment(lib, "Msimg32.lib")
+
 
 
 #define MAX_LOADSTRING 100
@@ -18,16 +20,18 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-void DrawBackground(HWND, int, int, int, int, HDC, HDC);
+HBITMAP DrawBackground(HWND, int, int, int, int, HDC, HDC, HBITMAP);
 //void DrawCharater(HWND, POINT, HDC, HDC, int);
-void DrawCharater(HWND, Player, HDC, HDC, int);
-void Run(HWND );
+HBITMAP DrawCharater(HWND, Player, HDC, HDC, HBITMAP);
+void Run(HWND);
 
 LARGE_INTEGER g_tSecond;   // 초당 클록수    ex) 360  (고정값)
 
 LARGE_INTEGER g_tTime;      // 이전 클록수    
 
 float		  g_fDeltaTime;
+
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
@@ -53,11 +57,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_NGPTERMPROJECT));
 
     MSG msg;
+
     QueryPerformanceFrequency(&g_tSecond); QueryPerformanceCounter(&g_tTime);
     // 기본 메시지 루프입니다:
     while (1)
     {
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        if (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE))
         {
             if (msg.message == WM_QUIT)
                 break;
@@ -83,8 +88,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         
     }*/
-    
-
     return (int)msg.wParam;
 }
 
@@ -157,23 +160,30 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 static POINT P1, P2;
 
-static Player p1(60.0f, 200.0f), p2(550.0f, 200.0f);
+static Player p1(80.0f, 200.0f), p2(550.0f, 200.0f);
+HBITMAP BGBitmap = NULL, P1Bitmap = NULL, P2Bitmap = NULL;
 
-int aaa = 0;
 
-Timer timer;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    
+    BGBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP1));
+    P1Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2));
+    P2Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP3));
 
     switch (message)
     {
     case WM_CREATE:
     {
-        Timer timer;
+        BGBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP1));
+        P1Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2));
+        P2Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP3));
+
         //p1.setPos(60.0f, 200.0f);
         //p2.setPos(550.0f, 200.0f);
         P1.x = 60, P1.y = 200, P2.x = 550, P2.y = 200;
     }
+    break;
     case WM_COMMAND:
     {
         int wmId = LOWORD(wParam);
@@ -197,9 +207,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         //InvalidateRect(hWnd, NULL, FALSE);
     }
+    break;
     case WM_PAINT:
     {
-        
         PAINTSTRUCT ps;
         HDC hdc, memDC, backDC;
         // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
@@ -215,12 +225,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         BackBit = CreateCompatibleBitmap(hdc, bufferRT.right, bufferRT.bottom);
         oldBackBit = (HBITMAP)SelectObject(backDC, BackBit);
+        DeleteObject(BackBit);
         FillRect(backDC, &bufferRT, (HBRUSH)GetStockObject(WHITE_BRUSH));
-        if(aaa==1)
-        DrawBackground(hWnd, 50, 50, bufferRT.right - 200, bufferRT.bottom - 150, memDC, backDC);
+
+        DrawBackground(hWnd, 50, 50, bufferRT.right - 200, bufferRT.bottom - 150, memDC, backDC, BGBitmap);
+
         // left, top, right, bottom,
-        DrawCharater(hWnd, p1, memDC, backDC, IDB_BITMAP2); // PLAYER 1
-        DrawCharater(hWnd, p2, memDC, backDC, IDB_BITMAP3); // PLAYER 2
+        DrawCharater(hWnd, p1, memDC, backDC, P1Bitmap); // PLAYER 1
+        DrawCharater(hWnd, p2, memDC, backDC, P2Bitmap); // PLAYER 2
+
+
+        if (BGBitmap == NULL) {
+            LPCWSTR word = TEXT("BG LOAD FAILED");
+            TextOut(backDC, 200, 300, word, lstrlen(word));
+        }
 
         //test/////////////////////////////
 
@@ -237,15 +255,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         BitBlt(hdc, 0, 0, bufferRT.right, bufferRT.bottom, backDC, 0, 0, SRCCOPY);
 
         SelectObject(hdc, oldBackBit);
-        DeleteObject(BackBit);
+        
         DeleteDC(hdc);
+        DeleteDC(backDC);
+        DeleteDC(memDC);
         EndPaint(hWnd, &ps);
 
+        DeleteObject(BGBitmap);
+        DeleteObject(P1Bitmap);
+        DeleteObject(P2Bitmap);
         
     }
 
     break;
     case WM_DESTROY:
+
         PostQuitMessage(0);
         break;
     default:
@@ -275,7 +299,6 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 void Run(HWND hWnd) {
-
     LARGE_INTEGER tTIme;
     QueryPerformanceCounter(&tTIme);
 
@@ -283,60 +306,32 @@ void Run(HWND hWnd) {
 
     g_tTime = tTIme;
 
-    aaa = 1;
-    if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
-        p1.move(30.f, 0.0f, g_fDeltaTime);
+    if (GetAsyncKeyState(VK_RIGHT) < 0) {
+        p1.move(p1.velocity, 0.0f, g_fDeltaTime);
     }
-    if (GetAsyncKeyState(VK_LEFT)) {
-        p1.move(-30.f, 0.0f, g_fDeltaTime);
+    else if (GetAsyncKeyState(VK_LEFT) < 0) {
+        p1.move(-p1.velocity, 0.0f, g_fDeltaTime);
     }
-    if (GetAsyncKeyState(VK_UP) ) {
-        p1.move(0.f, -30.0f, g_fDeltaTime);
+    if (GetAsyncKeyState(VK_UP) < 0) {
+        p1.move(0.f, -p1.velocity, g_fDeltaTime);
     }
-    if (GetAsyncKeyState(VK_DOWN) ) {
-        p1.move(0.f, 30.0f, g_fDeltaTime);
+    else if (GetAsyncKeyState(VK_DOWN) < 0) {
+        p1.move(0.f, p1.velocity, g_fDeltaTime);
     }
 
     InvalidateRect(hWnd, NULL, FALSE);
 }
 
-void DrawBackground(HWND hWnd, int left, int top, int right, int bottom, HDC hdc, HDC dest) {
-    HBITMAP MyBitmap;
-
-    MyBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP1));
-    SelectObject(hdc, MyBitmap);
+HBITMAP DrawBackground(HWND hWnd, int left, int top, int right, int bottom, HDC hdc, HDC dest, HBITMAP bitmap) {
+    SelectObject(hdc, bitmap);
 
     BitBlt(dest, left, top, right, bottom, hdc, 0, 0, SRCCOPY);
+    return bitmap;
 }
 
-/*
-void DrawCharater(HWND hWnd, POINT player, HDC hdc, HDC dest, int BITMAP) {
-    HBITMAP MyBitmap;
-    MyBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(BITMAP));
-    SelectObject(hdc, MyBitmap);
+HBITMAP DrawCharater(HWND hWnd, Player player, HDC hdc, HDC dest, HBITMAP BITMAP) {
+    SelectObject(hdc, BITMAP);
 
-    TransparentBlt(dest, player.x, player.y, 80, 80, hdc, 0, 0, 80, 80, RGB(255, 255, 255));
+    TransparentBlt(dest, (int)player.getX(), (int)player.getY(), 40, 40, hdc, 0, 0, 80, 80, RGB(255, 255, 255));
+    return BITMAP;
 }
-*/
-void DrawCharater(HWND hWnd, Player player, HDC hdc, HDC dest, int BITMAP) {
-    HBITMAP MyBitmap;
-    MyBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(BITMAP));
-    SelectObject(hdc, MyBitmap);
-
-    TransparentBlt(dest, (int)player.getX(), (int)player.getY(), 80, 80, hdc, 0, 0, 80, 80, RGB(255, 255, 255));
-}
-
-
-
-
-
-/*
-
-
-move(x, y , dtime ){
-
-    p1.x = x *dtime ;
-    p1.y = y * dtime;
-}
-
-*/
