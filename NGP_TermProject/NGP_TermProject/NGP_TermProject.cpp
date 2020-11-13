@@ -70,9 +70,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        else {
+
             Run(msg.hwnd);
-        }
+
     }
     /*while (GetMessage(&msg, nullptr, 0, 0))
     {
@@ -201,13 +201,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
     }
     break;
-    case WM_KEYDOWN:
-    {
-        
-
-        //InvalidateRect(hWnd, NULL, FALSE);
-    }
-    break;
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
@@ -266,7 +259,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DeleteObject(P2Bitmap);
         
     }
-
     break;
     case WM_DESTROY:
 
