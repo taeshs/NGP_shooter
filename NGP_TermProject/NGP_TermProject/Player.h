@@ -1,4 +1,6 @@
 #pragma once
+#include "Global.h"
+
 class Player
 {
 public:
@@ -15,9 +17,6 @@ public:
 	float getY() { return posY; }
 
 
-	float velocity = 50.f;
-	
-
 private:
 	float posX;
 	float posY;
@@ -27,4 +26,11 @@ private:
 
 	int hp;
 	int mp;
+
+	float velocity = 100.f;
+
+	Bullet bullet1;
+	Bullet bullet2;
+
+	BoundingBox bb;
 };
