@@ -6,8 +6,11 @@ public:
 	Player(float, float);
 	~Player();
 
-	void move(float x, float y, float deltaTime);
+	void move(int x, int y, float deltaTime);
+	void shoot(int dstX, int dstY, float deltaTime);
+
 	void setPos(float x, float y);
+
 	float getX() { return posX; }
 	float getY() { return posY; }
 
