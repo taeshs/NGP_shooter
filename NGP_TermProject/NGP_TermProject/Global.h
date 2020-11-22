@@ -6,3 +6,6 @@ struct vector2 {
 };
 
 static int nTime=1;
+
+int maxhp = 10;
+int minhp = 0;

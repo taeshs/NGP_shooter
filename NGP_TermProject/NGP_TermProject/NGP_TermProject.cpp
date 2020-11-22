@@ -138,6 +138,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_CREATE:
     {
         P1.x = 60, P1.y = 200, P2.x = 550, P2.y = 200;
+        
         //static int nTime = 0;
         SetTimer(hWnd, 0, 1000, NULL);
     }
@@ -232,15 +233,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         myBrush = CreateSolidBrush(RGB(255, 0, 0));
         oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
 
-        Rectangle(backDC, 50, 30, (bufferRT.right - 150)/2, 50);
+        //if (공격받을때) 
+        
+        minhp = (((bufferRT.right - 150) / 2) / 10) * maxhp;
+
+        //Rectangle(backDC, 50, 30, ((bufferRT.right - 100)/2)- minhp, 50);
+
+        Rectangle(backDC, 50, 30, minhp+50, 50);
 
         SelectObject(backDC, oldPen);
         SelectObject(backDC, oldBrush);
 
-
         myBrush = CreateSolidBrush(RGB(0, 0, 255));
         oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
-        Rectangle(backDC, (bufferRT.right - 150) / 2, 30, bufferRT.right - 150, 50);
+
+        Rectangle(backDC, ((bufferRT.right - 100) / 2), 30, bufferRT.right - 150, 50);// -150 + 50
 
         SelectObject(backDC, oldPen);
         SelectObject(backDC, oldBrush);
