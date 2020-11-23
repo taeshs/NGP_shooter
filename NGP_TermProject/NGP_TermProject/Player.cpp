@@ -19,7 +19,6 @@ bool Player::shoot(int stX, int stY, int dstX, int dstY, float deltaTime) {
 	bullets[bulletCount] = nowBullet;
 	bullets[bulletCount].shootDir.x = fx / sqrt(fx * fx + fy * fy);
 	bullets[bulletCount].shootDir.y = fy / sqrt(fx * fx + fy * fy);
-
 	
 	bullets[bulletCount].alive = true;
 	bullets[bulletCount].bPosX = stX;

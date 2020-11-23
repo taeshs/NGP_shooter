@@ -22,6 +22,8 @@ public:
 	void addMp() { if (mp < maxMp) { mp++; } }
 	void subMp(int val);
 
+	int getBulletCost() { return nowBullet.bType; }
+
 	Bullet bullet1 = {1, 10, 200, 10};	// size spd dmg
 	Bullet bullet2 = {2, 20, 200, 20};
 	Bullet bullet3 = {3, 10, 400, 20};
@@ -43,7 +45,7 @@ private:
 
 	float velocity = 100.f;
 
-	Bullet nowBullet = bullet1;
+	Bullet nowBullet = bullet3;
 
 
 	//BoundingBox bb;

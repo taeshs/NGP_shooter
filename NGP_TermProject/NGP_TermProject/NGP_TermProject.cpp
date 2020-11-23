@@ -219,25 +219,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         switch (wParam)
         {
-        case VK_UP:
-
-            P1.y -= 5;
+        case 0x31:
+            //숫자 1
             break;
 
-        case VK_DOWN:
+        case 0x32:
 
-            P1.y += 5;
             break;
 
 
-        case VK_LEFT:
-            P1.x -= 5;
-            break;
+        case 0x33:
 
-        case VK_RIGHT:
-            P1.x += 5;
             break;
-
         }
 
         InvalidateRect(hWnd, NULL, FALSE);
@@ -248,10 +241,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int posX, posY;
         posX = LOWORD(lParam);
         posY = HIWORD(lParam);
-        if (p1.shoot(p1.getX() + 20, p1.getY() + 20, posX, posY, g_fDeltaTime)) {
-            p1.subMp(1);
+        if (p1.getMp() >= 3) {
+            if (p1.shoot(p1.getX() + 20, p1.getY() + 20, posX, posY, g_fDeltaTime)) {
+                p1.subMp(3);
+            }
         }
-        //            p1.subMp(1) 로 마나 소모
+        //          
         break;
 
     case WM_PAINT:
