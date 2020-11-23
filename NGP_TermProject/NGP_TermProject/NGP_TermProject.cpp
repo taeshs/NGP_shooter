@@ -1,7 +1,5 @@
 ﻿// NGP_TermProject.cpp : 애플리케이션에 대한 진입점을 정의합니다.
 //
-
-
 #include "framework.h"
 #include "NGP_TermProject.h"
 #include "Global.h"
@@ -297,8 +295,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         HBRUSH myBrush, oldBrush;
 
         myPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-
         oldPen = (HPEN)SelectObject(backDC, myPen);
+
         myBrush = CreateSolidBrush(RGB(255, 0, 0));
         oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
 
@@ -311,7 +309,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         Rectangle(backDC, 50, 30, minhp+50, 50);
 
         SelectObject(backDC, oldPen);
+        DeleteObject(myPen);
         SelectObject(backDC, oldBrush);
+        DeleteObject(myBrush);
 
         myBrush = CreateSolidBrush(RGB(0, 0, 255));
         oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
@@ -319,12 +319,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         Rectangle(backDC, ((bufferRT.right - 100) / 2), 30, bufferRT.right - 150, 50);// -150 + 50
 
         SelectObject(backDC, oldPen);
+        DeleteObject(myPen);
         SelectObject(backDC, oldBrush);
+        DeleteObject(myBrush);
 
         // hp bar right를 hp비율로 나눔
         
 
-        Rectangle(backDC, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 100);
+        Rectangle(backDC, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 100);// 440);// 
         // skill bar
 
         myBrush = CreateSolidBrush(RGB(0, 255, 0));
@@ -337,7 +339,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
         SelectObject(backDC, oldPen);
+        DeleteObject(myPen);
         SelectObject(backDC, oldBrush);
+        DeleteObject(myBrush);
+
 
         //쓰고난 펜을 삭제해준다.
         DeleteObject(myPen);
