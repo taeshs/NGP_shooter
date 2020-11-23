@@ -10,19 +10,6 @@ struct vector2D {
     int x, y;
 };
 
-struct Bullet {
-    int bSize;
-    int bSpeed;
-    int bDamage;
-
-    int bPosX, bPosY;
-
-    int bPlayer;
-    //BoundingBox bb; 재정의 지정자 오류남
-
-    Bullet() {}
-};
-
 class BoundingBox {
 public:
     BoundingBox() {}
@@ -36,3 +23,18 @@ private:
     int bPlayer;
 };
 
+class Bullet {
+    bool alive;
+    int bType = 0;
+    int bSize;
+    int bSpeed;
+    int bDamage;
+
+    int bPosX = 0, bPosY = 0;
+
+    int bPlayer = 0;
+    BoundingBox bb;
+public:
+    Bullet(int type, int size, int spd, int dmg) { bType = type; bSize = size; bSpeed = spd; bDamage = dmg; }
+    Bullet() {}
+};

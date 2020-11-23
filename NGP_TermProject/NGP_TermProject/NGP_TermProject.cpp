@@ -220,6 +220,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (wParam)
         {
         case VK_UP:
+
             P1.y -= 5;
             break;
 
@@ -234,7 +235,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
 
         case VK_RIGHT:
-
             P1.x += 5;
             break;
 
@@ -247,6 +247,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int posX, posY;
         posX = LOWORD(lParam);
         posY = HIWORD(lParam);
+        //            p1.subMp(1) 로 마나 소모
         break;
 
     case WM_PAINT:
