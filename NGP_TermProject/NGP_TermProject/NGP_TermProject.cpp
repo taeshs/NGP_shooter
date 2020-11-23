@@ -266,7 +266,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         GetClientRect(hWnd, &bufferRT);
 
 
-        int mp_gage = (bufferRT.right - 50) / 10;
+        int mp_gage = (bufferRT.right - 100) / 10;
 
         gameGround = { 50,50,bufferRT.right - 200, bufferRT.bottom - 150 };
 
@@ -290,6 +290,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
 
         //test/////////////////////////////
+ 
+        //empty mp bar
+        Rectangle(backDC, 50, bufferRT.bottom - 100, bufferRT.right - 54, bufferRT.bottom - 50);
 
         HPEN myPen, oldPen;
         HBRUSH myBrush, oldBrush;
