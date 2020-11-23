@@ -16,6 +16,10 @@ public:
 	float getX() { return posX; }
 	float getY() { return posY; }
 
+	int getMp() { return mp; }
+
+	void addMp() { if (mp < maxMp) { mp++; } }
+
 
 private:
 	float posX;

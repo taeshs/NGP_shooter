@@ -266,7 +266,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         GetClientRect(hWnd, &bufferRT);
 
 
-        int mp_gage = (bufferRT.right - 50) / 50;
+        int mp_gage = (bufferRT.right - 50) / 10;
 
         gameGround = { 50,50,bufferRT.right - 200, bufferRT.bottom - 150 };
 
@@ -331,12 +331,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         myBrush = CreateSolidBrush(RGB(0, 255, 0));
         oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
+        
+        // 플레이어의 mp 수치 받아오기
+        int mp = p1.getMp();
 
-        if (50+mp_gage * nTime < bufferRT.right - 50)
-            Rectangle(backDC, 50, bufferRT.bottom - 100, 50 + mp_gage* nTime, bufferRT.bottom - 50);
-        else
-            Rectangle(backDC, 50, bufferRT.bottom - 100, bufferRT.right - 50, bufferRT.bottom - 50);
+        RECT mpBar;
+        mpBar.left = 50;
+        mpBar.top = bufferRT.bottom - 100;
+        mpBar.right = (50 + mp_gage * mp < bufferRT.right - 50) ? 50 + mp_gage * mp : bufferRT.right - 50;
+        mpBar.bottom = bufferRT.bottom - 50;
 
+        Rectangle(backDC, mpBar.left,mpBar.top,mpBar.right,mpBar.bottom);
+        // mp Bar
 
         SelectObject(backDC, oldPen);
         DeleteObject(myPen);
@@ -347,8 +353,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         //쓰고난 펜을 삭제해준다.
         DeleteObject(myPen);
         DeleteObject(myBrush);
-
-        // mp bar
 
         //test//////////////////////////////// 
 
@@ -399,13 +403,18 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
-
+float timer = 0.f;
 
 void Run(HWND hWnd) {
     LARGE_INTEGER tTIme;
     QueryPerformanceCounter(&tTIme);
 
     g_fDeltaTime = (tTIme.QuadPart - g_tTime.QuadPart) / (float)g_tSecond.QuadPart;
+    timer+=g_fDeltaTime;
+    if (timer > 1.0f) {
+        timer = 0.f;
+        p1.addMp();
+    }
 
     g_tTime = tTIme;
 
