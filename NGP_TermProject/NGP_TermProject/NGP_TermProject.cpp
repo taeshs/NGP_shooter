@@ -448,19 +448,19 @@ void Run(HWND hWnd) {
 
     g_tTime = tTIme;
 
-    if (GetAsyncKeyState(VK_RIGHT) < 0) {
+    if (GetAsyncKeyState(VK_RIGHT) < 0 || GetAsyncKeyState(0x44) < 0) {
         if (gameGround.right > p1.getX())
         p1.move(1, 0, g_fDeltaTime);
     }
-    else if (GetAsyncKeyState(VK_LEFT) < 0) {
+    else if (GetAsyncKeyState(VK_LEFT) < 0 || GetAsyncKeyState(0x41) < 0) {
         if(gameGround.left < p1.getX())
             p1.move(-1, 0, g_fDeltaTime);
     }
-    if (GetAsyncKeyState(VK_UP) < 0) {
+    if (GetAsyncKeyState(VK_UP) < 0 || GetAsyncKeyState(0x57) < 0) {
         if (gameGround.top <  p1.getY())
             p1.move(0, -1, g_fDeltaTime);
     }
-    else if (GetAsyncKeyState(VK_DOWN) < 0) {
+    else if (GetAsyncKeyState(VK_DOWN) < 0 || GetAsyncKeyState(0x53) < 0) {
         if (gameGround.bottom > p1.getY())
             p1.move(0, 1, g_fDeltaTime);
     }
