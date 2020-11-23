@@ -1,5 +1,6 @@
 #pragma once
 #include "Global.h"
+#include <math.h>
 
 class Player
 {
@@ -25,8 +26,12 @@ public:
 	Bullet bullet2 = {2, 20, 200, 20};
 	Bullet bullet3 = {3, 10, 400, 20};
 
+	int maxBulletCnt = 10;
+	Bullet bullets[10];
+	int bulletCount = 0;
 
 private:
+	float playerNo = 0;
 	float posX;
 	float posY;
 
@@ -38,10 +43,8 @@ private:
 
 	float velocity = 100.f;
 
-	Bullet nowBullet;
+	Bullet nowBullet = bullet1;
 
-	Bullet bullets[10];
-	int bulletCount = 0;
 
-	BoundingBox bb;
+	//BoundingBox bb;
 };

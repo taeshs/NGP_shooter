@@ -13,11 +13,26 @@ void Player::move(int dirx, int diry, float deltaTime) {
 }
 
 bool Player::shoot(int stX, int stY, int dstX, int dstY, float deltaTime) {
-	vector2D shootDir;			// 벡터 노멀라이즈 해서 델타타임으로 발사.
-	shootDir.x = dstX / (dstX - stX);
-	shootDir.y = dstY / (dstY - stY);
 
-	//bullets[bulletCount].alive = true;
+	float fx = float(dstX - stX), fy = float(dstY - stY);
+	//
+	bullets[bulletCount] = nowBullet;
+	bullets[bulletCount].shootDir.x = fx / sqrt(fx * fx + fy * fy);
+	bullets[bulletCount].shootDir.y = fy / sqrt(fx * fx + fy * fy);
+
+	
+	bullets[bulletCount].alive = true;
+	bullets[bulletCount].bPosX = stX;
+	bullets[bulletCount].bPosY = stY;
+	bullets[bulletCount].bPlayer = playerNo;
+	
+	if (bulletCount == 9) {
+		bulletCount = 0;
+	}
+	else {
+		bulletCount++;
+	}
+	return true;
 }
 
 void Player::setPos(float x, float y) {

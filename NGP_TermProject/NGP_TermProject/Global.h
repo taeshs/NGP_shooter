@@ -7,12 +7,12 @@ static int nTime=1;
 #define TYPE_PLAYER 10001
 
 struct vector2D {
-    int x, y;
+    float x, y;
 };
 
 class BoundingBox {
 public:
-    BoundingBox() {}
+    BoundingBox();
     BoundingBox(float a, float b, float c, float d, int ty, int Player) { left = a; top = b; right = c; bottom = d; type = ty; bPlayer = Player; }
 
 
@@ -23,18 +23,30 @@ private:
     int bPlayer;
 };
 
-class Bullet {
-    bool alive;
+struct Bullet {
+    vector2D shootDir;
+    bool alive = false;
     int bType = 0;
     int bSize;
     int bSpeed;
     int bDamage;
 
-    int bPosX = 0, bPosY = 0;
+    float bPosX = 0, bPosY = 0;
 
     int bPlayer = 0;
-    BoundingBox bb;
-public:
+    //BoundingBox bb;
+
     Bullet(int type, int size, int spd, int dmg) { bType = type; bSize = size; bSpeed = spd; bDamage = dmg; }
     Bullet() {}
+
+    void updateBB() {
+
+    }
+
+    void update(float deltaTime) {
+        //面倒贸府 秦拎具窃.
+        bPosX += shootDir.x * bSpeed * deltaTime;
+        bPosY += shootDir.y * bSpeed * deltaTime;
+        updateBB();
+    }
 };

@@ -242,11 +242,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         InvalidateRect(hWnd, NULL, FALSE);
     }
+    break;
 
     case WM_LBUTTONDOWN:
         int posX, posY;
         posX = LOWORD(lParam);
         posY = HIWORD(lParam);
+        if (p1.shoot(p1.getX() + 20, p1.getY() + 20, posX, posY, g_fDeltaTime)) {
+            p1.subMp(1);
+        }
         //            p1.subMp(1) 로 마나 소모
         break;
 
@@ -348,6 +352,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         Rectangle(backDC, mpBar.left,mpBar.top,mpBar.right,mpBar.bottom);
         // mp Bar
 
+        for (int i = 0; i < p1.maxBulletCnt; i++) {
+            if(p1.bullets[i].alive)
+                Rectangle(backDC, p1.bullets[i].bPosX - 5, p1.bullets[i].bPosY + 5 , p1.bullets[i].bPosX + 5, p1.bullets[i].bPosY - 5);
+        }
+        // 임시 총알 
+        
+
         SelectObject(backDC, oldPen);
         DeleteObject(myPen);
         SelectObject(backDC, oldBrush);
@@ -437,6 +448,11 @@ void Run(HWND hWnd) {
     else if (GetAsyncKeyState(VK_DOWN) < 0) {
         if (gameGround.bottom > p1.getY())
             p1.move(0, 1, g_fDeltaTime);
+    }
+
+    for (int i = 0; i < p1.maxBulletCnt; i++) {
+        if(p1.bullets[i].alive)
+            p1.bullets[i].update(g_fDeltaTime);
     }
 
     InvalidateRect(hWnd, NULL, FALSE);
