@@ -24,9 +24,15 @@ public:
 
 	int getBulletCost() { return nowBullet.bType; }
 
-	Bullet bullet1 = {1, 10, 200, 10};	// size spd dmg
-	Bullet bullet2 = {2, 20, 200, 20};
-	Bullet bullet3 = {3, 10, 400, 20};
+	void setBullet(int val) {
+		if (val == 1)nowBullet = bullet1;
+		if (val == 2)nowBullet = bullet2;
+		if (val == 3)nowBullet = bullet3;
+	}
+
+	Bullet bullet1 = {2, 10, 200, 10};	// size spd dmg
+	Bullet bullet2 = {3, 20, 200, 20};
+	Bullet bullet3 = {4, 10, 400, 20};
 
 	int maxBulletCnt = 10;
 	Bullet bullets[10];
@@ -45,7 +51,7 @@ private:
 
 	float velocity = 100.f;
 
-	Bullet nowBullet = bullet3;
+	Bullet nowBullet = bullet1;
 
 
 	//BoundingBox bb;

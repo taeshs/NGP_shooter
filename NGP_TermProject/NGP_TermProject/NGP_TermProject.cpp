@@ -224,16 +224,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (wParam)
         {
         case 0x31:
-            //숫자 1
+            p1.setBullet(1);
             break;
 
         case 0x32:
-
+            p1.setBullet(2);
             break;
 
-
         case 0x33:
-
+            p1.setBullet(3);
             break;
         }
 
@@ -246,9 +245,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         posX = LOWORD(lParam);
         posY = HIWORD(lParam);
 
-        if (p1.getMp() >= 3) {
+        if (p1.getMp() >= p1.getBulletCost()) {
             if (p1.shoot(p1.getX() + 20, p1.getY() + 20, posX, posY, g_fDeltaTime)) {
-                p1.subMp(3);
+                p1.subMp(p1.getBulletCost());
             }
         }
         //          
@@ -284,7 +283,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         int mp_gage = (bufferRT.right - 100) / 10;
 
-        gameGround = { 50,50,bufferRT.right - 200, bufferRT.bottom - 150 };
+        gameGround = { 50,50,bufferRT.right - 190, bufferRT.bottom - 140 };
 
 
         BackBit = CreateCompatibleBitmap(hdc, bufferRT.right, bufferRT.bottom);
@@ -369,7 +368,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         for (int i = 0; i < p1.maxBulletCnt; i++) {
             if(p1.bullets[i].alive)
-                Rectangle(backDC, p1.bullets[i].bPosX - 5, p1.bullets[i].bPosY + 5 , p1.bullets[i].bPosX + 5, p1.bullets[i].bPosY - 5);
+                Rectangle(backDC, p1.bullets[i].bPosX - p1.bullets[i].bSize / 2, p1.bullets[i].bPosY + p1.bullets[i].bSize / 2
+                    , p1.bullets[i].bPosX + p1.bullets[i].bSize / 2, p1.bullets[i].bPosY - p1.bullets[i].bSize / 2);
         }
         // 임시 총알 
         
@@ -467,7 +467,7 @@ void Run(HWND hWnd) {
 
     for (int i = 0; i < p1.maxBulletCnt; i++) {
         if(p1.bullets[i].alive)
-            p1.bullets[i].update(g_fDeltaTime);
+            p1.bullets[i].update(g_fDeltaTime, gameGround);
     }
 
     InvalidateRect(hWnd, NULL, FALSE);
