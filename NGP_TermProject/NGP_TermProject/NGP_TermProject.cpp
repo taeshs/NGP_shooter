@@ -245,14 +245,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int posX, posY;
         posX = LOWORD(lParam);
         posY = HIWORD(lParam);
-<<<<<<< HEAD
+
         if (p1.getMp() >= 3) {
             if (p1.shoot(p1.getX() + 20, p1.getY() + 20, posX, posY, g_fDeltaTime)) {
                 p1.subMp(3);
             }
         }
         //          
-=======
+
 
         // if posx,y가 스킬1범위에 있을때
         //            p1.subMp(1) 로 마나 소모, 스킬실행
@@ -262,7 +262,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
          // if posx,y가 스킬3범위에 있을때
         //            p1.subMp(1) 로 마나 소모, 스킬실행
->>>>>>> abb1e9f4f93054dad1de7e040ee42591a423de37
+
         break;
 
     case WM_PAINT:
