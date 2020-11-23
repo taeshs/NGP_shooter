@@ -21,6 +21,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 HBITMAP DrawBackground(HWND, int, int, int, int, HDC, HDC, HBITMAP);
+HBITMAP DrawSkill(HWND, int, int, int, int, HDC, HDC, HBITMAP);
 //void DrawCharater(HWND, POINT, HDC, HDC, int);
 HBITMAP DrawCharater(HWND, Player, HDC, HDC, HBITMAP);
 void Run(HWND);
@@ -162,7 +163,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 static POINT P1, P2;
 
 static Player p1(80.0f, 200.0f), p2(550.0f, 200.0f);
-HBITMAP BGBitmap, P1Bitmap, P2Bitmap;
+HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap;
 RECT gameGround;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -180,6 +181,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         BGBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP1));
         P1Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2));
         P2Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP3));
+        S1Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP4));
+        S2Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP5));
+        S3Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP6));
 
 
         //p1.setPos(60.0f, 200.0f);
@@ -247,7 +251,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int posX, posY;
         posX = LOWORD(lParam);
         posY = HIWORD(lParam);
-        //            p1.subMp(1) 로 마나 소모
+
+        // if posx,y가 스킬1범위에 있을때
+        //            p1.subMp(1) 로 마나 소모, 스킬실행
+
+         // if posx,y가 스킬2범위에 있을때
+        //            p1.subMp(1) 로 마나 소모, 스킬실행
+
+         // if posx,y가 스킬3범위에 있을때
+        //            p1.subMp(1) 로 마나 소모, 스킬실행
         break;
 
     case WM_PAINT:
@@ -280,6 +292,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DrawBackground(hWnd, gameGround.left, gameGround.top, gameGround.right, gameGround.bottom, memDC, backDC, BGBitmap);
         // rect로 배경 범위 만들기. -> 범위 내 이동
 
+        DrawSkill(hWnd, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 360, memDC, backDC, S1Bitmap);
+        DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 360, bufferRT.right - 50, bufferRT.bottom - 230, memDC, backDC, S2Bitmap);
+        DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 230, bufferRT.right - 50, bufferRT.bottom - 100, memDC, backDC, S3Bitmap);
+
         // left, top, right, bottom,
         DrawCharater(hWnd, p1, memDC, backDC, P1Bitmap); // PLAYER 1
         DrawCharater(hWnd, p2, memDC, backDC, P2Bitmap); // PLAYER 2
@@ -306,7 +322,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         //if (공격받을때) 
         
-        minhp = (((bufferRT.right - 150) / 2) / 10) * maxhp;
+        minhp = (((bufferRT.right - 150) / 2) / 10) * p1.maxHp;
 
         //Rectangle(backDC, 50, 30, ((bufferRT.right - 100)/2)- minhp, 50);
 
@@ -330,7 +346,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // hp bar right를 hp비율로 나눔
         
 
-        Rectangle(backDC, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 100);// 440);// 
+        //Rectangle(backDC, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 100);// 440);// 
         // skill bar
 
         myBrush = CreateSolidBrush(RGB(0, 255, 0));
@@ -454,4 +470,11 @@ HBITMAP DrawCharater(HWND hWnd, Player player, HDC hdc, HDC dest, HBITMAP BITMAP
 
     TransparentBlt(dest, (int)player.getX(), (int)player.getY(), 40, 40, hdc, 0, 0, 80, 80, RGB(255, 255, 255));
     return BITMAP;
+}
+
+HBITMAP DrawSkill(HWND hWnd, int left, int top, int right, int bottom, HDC hdc, HDC dest, HBITMAP bitmap) {
+    SelectObject(hdc, bitmap);
+
+    BitBlt(dest, left, top, right, bottom, hdc, 0, 0, SRCCOPY);
+    return bitmap;
 }

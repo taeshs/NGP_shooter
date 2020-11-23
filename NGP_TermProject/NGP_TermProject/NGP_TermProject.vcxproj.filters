@@ -72,5 +72,14 @@
     <Image Include="character2.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="스킬1.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="스킬2.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="스킬3.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
 </Project>

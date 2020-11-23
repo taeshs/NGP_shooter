@@ -18,6 +18,8 @@ bool Player::shoot(int stX, int stY, int dstX, int dstY, float deltaTime) {
 	shootDir.y = dstY / (dstY - stY);
 
 	//bullets[bulletCount].alive = true;
+
+	return true;
 }
 
 void Player::setPos(float x, float y) {

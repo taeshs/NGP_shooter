@@ -25,13 +25,13 @@ public:
 	Bullet bullet2 = {2, 20, 200, 20};
 	Bullet bullet3 = {3, 10, 400, 20};
 
+	int maxHp;
+	int maxMp;
+
 
 private:
 	float posX;
 	float posY;
-
-	int maxHp;
-	int maxMp;
 
 	int hp;
 	int mp;
