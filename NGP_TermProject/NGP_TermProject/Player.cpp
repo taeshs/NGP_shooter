@@ -31,6 +31,7 @@ bool Player::shoot(int stX, int stY, int dstX, int dstY, float deltaTime) {
 	else {
 		bulletCount++;
 	}
+
 	return true;
 }
 

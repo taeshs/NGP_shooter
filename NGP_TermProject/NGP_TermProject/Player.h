@@ -32,13 +32,13 @@ public:
 	Bullet bullets[10];
 	int bulletCount = 0;
 
+	int maxHp;
+	int maxMp;
+
 private:
 	float playerNo = 0;
 	float posX;
 	float posY;
-
-	int maxHp;
-	int maxMp;
 
 	int hp;
 	int mp;

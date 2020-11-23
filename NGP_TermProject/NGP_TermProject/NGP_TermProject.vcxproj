@@ -167,6 +167,9 @@
     <Image Include="character2.bmp" />
     <Image Include="NGP_TermProject.ico" />
     <Image Include="small.ico" />
+    <Image Include="스킬1.bmp" />
+    <Image Include="스킬2.bmp" />
+    <Image Include="스킬3.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
