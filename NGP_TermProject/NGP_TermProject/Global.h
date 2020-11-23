@@ -1,14 +1,7 @@
 #pragma once
 //#include "profileapi.h"
 
-
-struct vector2 {
-	int x, y;
-};
-
 static int nTime=1;
-
-
 
 #define TYPE_BULLET 10000
 #define TYPE_PLAYER 10001
