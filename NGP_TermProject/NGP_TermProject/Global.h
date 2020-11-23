@@ -2,6 +2,7 @@
 //#include "profileapi.h"
 #include "framework.h"
 
+
 static int nTime=1;
 
 #define TYPE_BULLET 10000

@@ -3,6 +3,7 @@
 #include "framework.h"
 #include "NGP_TermProject.h"
 #include "Global.h"
+//#include "winsock.h"
 #pragma comment(lib, "Msimg32.lib")
 
 
@@ -13,6 +14,16 @@
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+
+/*
+//서버관련
+SOCKET sock;
+
+Player_Socket Player_socket;
+Server_Player Server_data;
+*/
+
+DWORD WINAPI ClientMain(LPVOID);
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -25,6 +36,8 @@ HBITMAP DrawSkill(HWND, int, int, int, int, HDC, HDC, HBITMAP);
 //void DrawCharater(HWND, POINT, HDC, HDC, int);
 HBITMAP DrawCharater(HWND, Player, HDC, HDC, HBITMAP);
 void Run(HWND);
+
+
 
 LARGE_INTEGER g_tSecond;   // 초당 클록수    ex) 360  (고정값)
 
@@ -49,6 +62,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_NGPTERMPROJECT, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
+
+    // 소켓 통신 스레드 생성
+    //CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
     // 애플리케이션 초기화를 수행합니다:
     if (!InitInstance(hInstance, nCmdShow))
@@ -90,6 +106,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         
     }*/
+
+    // closesocket()
+    //closesocket(sock);
+
+    // 윈속 종료
+    //WSACleanup();
+
     return (int)msg.wParam;
 }
 
@@ -302,11 +325,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DrawCharater(hWnd, p1, memDC, backDC, P1Bitmap); // PLAYER 1
         DrawCharater(hWnd, p2, memDC, backDC, P2Bitmap); // PLAYER 2
 
-
+        /*
         if (BGBitmap == NULL) {
             LPCWSTR word = TEXT("BG LOAD FAILED");
             TextOut(backDC, 200, 300, word, lstrlen(word));
         }
+        */
 
         //test/////////////////////////////
  
@@ -493,3 +517,25 @@ HBITMAP DrawSkill(HWND hWnd, int left, int top, int right, int bottom, HDC hdc, 
     BitBlt(dest, left, top, right, bottom, hdc, 0, 0, SRCCOPY);
     return bitmap;
 }
+
+/*
+DWORD WINAPI ProcessClient(LPVOID arg) {
+    while (1) {
+        send_Player(sock, Player_socket);
+        server_Player = recv_Player(sock);
+        
+    }
+    return 0;
+}
+
+// TCP 클라이언트 시작 부분
+DWORD WINAPI ClientMain(LPVOID arg)
+{
+    HANDLE hThread;
+    sock = init_socket();
+
+    hThread = CreateThread(NULL, 0, ProcessClient, 0, 0, NULL);
+
+    return 0;
+}
+*/
