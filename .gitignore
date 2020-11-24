@@ -59,3 +59,6 @@ dkms.conf
 **/NGP_TermProject/Debug/
 **/NGP_TermProject/Release/
 **/NGP_TermProject/x64/
+**/NGP_TermProject_Server/Debug/
+**/NGP_TermProject_Server/Release/
+**/NGP_TermProject_Server/x64/
