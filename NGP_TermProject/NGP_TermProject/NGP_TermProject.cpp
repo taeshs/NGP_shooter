@@ -20,7 +20,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름�
 SOCKET sock;
 
 Player_Socket Player_socket;
-Server_Player Server_data;
+Server_Player server_Player;
 
 
 DWORD WINAPI ClientMain(LPVOID);
@@ -523,7 +523,6 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     while (1) {
         send_Player(sock, Player_socket);
         server_Player = recv_Player(sock);
-        
     }
     return 0;
 }

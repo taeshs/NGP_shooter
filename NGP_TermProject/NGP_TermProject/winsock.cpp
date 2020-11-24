@@ -64,7 +64,7 @@ SOCKET init_socket() {
 	if (retval == SOCKET_ERROR) err_quit("connect()");
 
 
-	printf("[알림] %s:%d 정상적으로 연결 되었습니다..!\n", IPaddres, SERVERPORT);
+	//printf("[알림] %s:%d 정상적으로 연결 되었습니다..!\n", IPaddres, SERVERPORT);
 	return sock;
 }
 
