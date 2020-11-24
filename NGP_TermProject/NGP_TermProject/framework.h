@@ -16,6 +16,7 @@
 #include <memory.h>
 #include <tchar.h>
 #include "Player.h"
+#include "winsock.h"
 
 
 

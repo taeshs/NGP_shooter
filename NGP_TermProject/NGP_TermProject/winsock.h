@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "framework.h"
 #include "Global.h"
 
 #define SERVERIP   "127.0.0.1"
@@ -17,7 +18,6 @@
 typedef struct Player_Socket
 {
 	int posX, posY;
-	vector2D lookDir;
 	int hp;
 	bool isAttack;
 	bool live;

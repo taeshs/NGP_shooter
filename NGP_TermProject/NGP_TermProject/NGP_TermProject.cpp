@@ -3,7 +3,7 @@
 #include "framework.h"
 #include "NGP_TermProject.h"
 #include "Global.h"
-//#include "winsock.h"
+#include "winsock.h"
 #pragma comment(lib, "Msimg32.lib")
 
 
@@ -15,13 +15,13 @@ HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
-/*
+
 //서버관련
 SOCKET sock;
 
 Player_Socket Player_socket;
 Server_Player Server_data;
-*/
+
 
 DWORD WINAPI ClientMain(LPVOID);
 
@@ -64,7 +64,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MyRegisterClass(hInstance);
 
     // 소켓 통신 스레드 생성
-    //CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
+    CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
     // 애플리케이션 초기화를 수행합니다:
     if (!InitInstance(hInstance, nCmdShow))
@@ -518,7 +518,7 @@ HBITMAP DrawSkill(HWND hWnd, int left, int top, int right, int bottom, HDC hdc, 
     return bitmap;
 }
 
-/*
+
 DWORD WINAPI ProcessClient(LPVOID arg) {
     while (1) {
         send_Player(sock, Player_socket);
@@ -538,4 +538,3 @@ DWORD WINAPI ClientMain(LPVOID arg)
 
     return 0;
 }
-*/
