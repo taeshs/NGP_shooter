@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include "server.h"
 
 using namespace std;
 
@@ -13,8 +14,15 @@ using namespace std;
 
 #define MIN(a,b) a>b?b:a
 
+Server_Player server_player;
+
+bool Client[MAX_Client] = { false }; //클라이언트가 들어오는 대로 처리한다.
+void send_Player(SOCKET, Server_Player);
+DWORD WINAPI ProcessClient(LPVOID);
+//Client_Player recv_Player(SOCKET sock);
+
 // 소켓 함수 오류 출력 후 종료
-void err_quit(char* msg)
+void err_quit(const char* msg)
 {
     LPVOID lpMsgBuf;
     FormatMessage(
@@ -28,7 +36,7 @@ void err_quit(char* msg)
 }
 
 // 소켓 함수 오류 출력
-void err_display(char* msg)
+void err_display(const char* msg)
 {
     LPVOID lpMsgBuf;
     FormatMessage(
@@ -73,7 +81,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
     char* buf = new char[BUFSIZE + 1];
 
-    int m_no = no++;
+    int m_no=0;
     int threadId = GetCurrentThreadId();
     printf("스레드 생성 : %d\n", threadId);
 
@@ -82,24 +90,67 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     SOCKADDR_IN clientaddr;
     int addrlen;
 
-    // 클라이언트 정보 얻기
+    // 클라이언트 정보
     addrlen = sizeof(clientaddr);
     getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 
-    char file_name[50];
-    ZeroMemory(file_name, sizeof(file_name));
-    int len;
-    int f_len;
-
-
-    /*
-    retval = recvn(client_sock, (char*)&f_len, sizeof(int), 0);
-    if (retval == SOCKET_ERROR) {
-        err_display("recv()1");
-        return NULL;
+    for (int i = 0; i < MAX_Client; ++i) {
+        if (Client[i] == false) {
+            Client[i] = true;
+            m_no = i;
+            printf("%d번째 클라이언트 입니다", i+1);
+            break;
+        }
     }
-    */
 
+    // 인원체크
+    if (m_no == 2) {
+        closesocket(client_sock);
+        printf("클라이언트 종료: IP 주소=%s, 포트 번호=%d [인원 초과]\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
+        return 0;
+    }
+
+    while (1) {
+
+        int retval;
+        int buf;
+        int GetSize;
+
+        retval = recvn(client_sock, (char*)&buf, sizeof(int), 0); // 데이터 받기(고정 길이)
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+        }
+        else if (retval == 0) {
+
+        }
+
+        char Buffer[BUFSIZE];
+        Client_Player* player;
+        GetSize = recv(client_sock, Buffer, buf, 0);
+        if (GetSize == SOCKET_ERROR) {
+            MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
+            exit(1);
+        }
+
+        Buffer[GetSize] = '\0'; // 마지막 버퍼 비워줌
+        player = (Client_Player*)Buffer;
+
+
+        server_player.player[m_no].posX = player->player_socket.posX;
+        server_player.player[m_no].posY = player->player_socket.posY;
+        server_player.player[m_no].hp = player->player_socket.hp;
+        server_player.player[m_no].isAttack = player->player_socket.isAttack;
+        server_player.player[m_no].live = player->player_socket.live;
+      
+
+        //printf( "Xrotate : %f\n", server_data.player[0].camxrotate );
+
+        //int retval;
+        // 데이터 보내기( 구조체 크기를 먼저 보낸다. )
+
+        send_Player(client_sock, server_player);
+
+    }
 
     // closesocket()
     closesocket(client_sock);
@@ -169,6 +220,53 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+void send_Player(SOCKET sock, Server_Player player) {
+    int retval;
+
+    // 데이터 보내기( 구조체 크기를 먼저 보낸다. )
+    int buf = sizeof(player);
+    retval = send(sock, (char*)&buf, sizeof(int), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("send()");
+        exit(1);
+    }
+
+    // 데이터 보내기( 구조체 데이터를 보낸다. )
+    retval = send(sock, (char*)&player, sizeof(Server_Player), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("send()");
+        exit(1);
+    }
+}
+
+/*
+Client_Player recv_Player(SOCKET sock) {
+    int retval;
+    int buf;
+    int GetSize;
+
+    retval = recvn(sock, (char*)&buf, sizeof(int), 0); // 데이터 받기(고정 길이)
+    if (retval == SOCKET_ERROR) {
+        err_display("recv()");
+    }
+    else if (retval == 0) {
+
+    }
+
+    char Buffer[BUFSIZE];
+    Client_Player* player;
+    GetSize = recv(sock, Buffer, buf, 0);
+    if (GetSize == SOCKET_ERROR) {
+        MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
+        exit(1);
+    }
+
+    Buffer[GetSize] = '\0'; // 마지막 버퍼 비워줌
+    player = (Client_Player*)Buffer;
+
+    return *player;
+}
+*/
 
 
 
