@@ -20,7 +20,6 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름�
 SOCKET sock;
 
 Player_Socket Player_socket;
-Server_Player server_Player;
 
 
 DWORD WINAPI ClientMain(LPVOID);
@@ -186,7 +185,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 static POINT P1, P2;
 
-static Player p1(80.0f, 200.0f), p2(550.0f, 200.0f);
+static Player p1(80.0f, 200.0f), p2(550.0f, 200.0f);            // P1 P2 -> PLAYER   OTHERPLAYER 변수이름 변경
+// 내번호가 0번이면 PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
+// 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
+
+
 HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap;
 RECT gameGround;
 
@@ -500,11 +503,8 @@ void Run(HWND hWnd) {
                 p1.bullets[i].update(g_fDeltaTime, gameGround);
         }
 
-        Player_socket.posX = p1.getX();
-        Player_socket.posX = p1.getY();
- 
-        server_Player.Players->posX = p1.getX();
-        server_Player.Players->posY = p1.getY();
+        //Player_socket.posX = p1.getX();
+        //Player_socket.posX = p1.getY();
 
     InvalidateRect(hWnd, NULL, FALSE);
 }
@@ -542,11 +542,16 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
             closesocket(sock);
         }
         printf("-> 클라 아이디 (번호): %d\n", clientid);
-
+        //PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
+        // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
+        
+        // player_socket.posX = player.getPos();
+        // player_socket.posX = player.getPos();
+        // player_socket.posX = player.getPos();
         send_Player(sock, Player_socket);
-        server_Player = recv_Player(sock);
+        //otherPlayer = recv_Player(sock);          // 받은 정보로 otherplayer set.
 
-        p2.setPos(server_Player.Players->posX, server_Player.Players->posY);
+        //p2.setPos(server_Player.Players->posX, server_Player.Players->posY);
 
     }
     return 0;
@@ -562,3 +567,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 
     return 0;
 }
+
+
+// 만약에 받은 플레이어 번호가 0번이면 1P -> 

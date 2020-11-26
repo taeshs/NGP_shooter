@@ -14,10 +14,8 @@ using namespace std;
 
 #define MIN(a,b) a>b?b:a
 
-Server_Player server_player;
+void send_Player(SOCKET, Player_Socket);
 
-bool Client[MAX_Client] = { false }; //클라이언트가 들어오는 대로 처리한다.
-void send_Player(SOCKET, Server_Player);
 DWORD WINAPI ProcessClient(LPVOID);
 //Client_Player recv_Player(SOCKET sock);
 
@@ -74,14 +72,17 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 
 
 int no = 0;
-int val[10] = { 0, };
+int val[10] = { 0, };   //
 
+Player_Socket Player[2];
+
+char Buffer[BUFSIZE];
 
 DWORD WINAPI ProcessClient(LPVOID arg) {
 
     char* buf = new char[BUFSIZE + 1];
 
-    int m_no=0;
+    int m_no=no++;
     int threadId = GetCurrentThreadId();
     printf("스레드 생성 : %d\n", threadId);
 
@@ -95,17 +96,10 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     addrlen = sizeof(clientaddr);
     getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 
-    for (int i = 0; i < MAX_Client; ++i) {
-        if (Client[i] == false) {
-            Client[i] = true;
-            m_no = i;
-            printf("%d번째 클라이언트 입니다", i+1);
-            break;
-        }
-    }
+    printf("%d번째 클라이언트 입니다", m_no + 1);
 
     // 인원체크
-    if (m_no == 2) {
+    if (no == 3) {
         closesocket(client_sock);
         printf("클라이언트 종료: IP 주소=%s, 포트 번호=%d [인원 초과]\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
         return 0;
@@ -133,8 +127,8 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
         }
 
-        char Buffer[BUFSIZE];
-        Client_Player* player;
+        
+        Player_Socket* player;
         GetSize = recv(client_sock, Buffer, buf, 0);
         if (GetSize == SOCKET_ERROR) {
             MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
@@ -142,14 +136,21 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         }
 
         Buffer[GetSize] = '\0'; // 마지막 버퍼 비워줌
-        player = (Client_Player*)Buffer;
+        player = (Player_Socket*)Buffer;
+        
+        Player[m_no];
 
+        /// <summary>
+        ///  Player[0]; Player[1];
+        /// Player[0] - Player[1]send ;
+        /// 
+        /// </summary>
 
-        server_player.player[m_no].posX = player->player_socket.posX;
-        server_player.player[m_no].posY = player->player_socket.posY;
-        server_player.player[m_no].hp = player->player_socket.hp;
-        server_player.player[m_no].isAttack = player->player_socket.isAttack;
-        server_player.player[m_no].live = player->player_socket.live;
+        Player[m_no].posX = player->posX;
+        Player[m_no].posY = player->posY;
+        Player[m_no].hp = player->hp;
+        Player[m_no].isAttack = player->isAttack;
+        Player[m_no].live = player->live;
       
 
         //printf( "Xrotate : %f\n", server_data.player[0].camxrotate );
@@ -157,7 +158,13 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         //int retval;
         // 데이터 보내기( 구조체 크기를 먼저 보낸다. )
 
-        send_Player(client_sock, server_player);
+        if (m_no == 0) {
+            send_Player(client_sock, Player[1]);
+        }
+        else {
+            send_Player(client_sock, Player[0]);
+        }
+        
 
     }
 
@@ -229,7 +236,7 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-void send_Player(SOCKET sock, Server_Player player) {
+void send_Player(SOCKET sock, Player_Socket player) {
     int retval;
 
     // 데이터 보내기( 구조체 크기를 먼저 보낸다. )
@@ -241,7 +248,7 @@ void send_Player(SOCKET sock, Server_Player player) {
     }
 
     // 데이터 보내기( 구조체 데이터를 보낸다. )
-    retval = send(sock, (char*)&player, sizeof(Server_Player), 0);
+    retval = send(sock, (char*)&player, sizeof(Player_Socket), 0);
     if (retval == SOCKET_ERROR) {
         err_display("send()");
         exit(1);

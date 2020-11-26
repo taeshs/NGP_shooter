@@ -89,7 +89,7 @@ void send_Player(SOCKET sock, Player_Socket player) {
 
 }
 
-Server_Player recv_Player(SOCKET sock) {
+Player_Socket recv_Player(SOCKET sock) {
 	int retval;
 	int buf;
 	int GetSize;
@@ -103,7 +103,7 @@ Server_Player recv_Player(SOCKET sock) {
 	}
 
 	char Buffer[BUFSIZE];
-	Server_Player* player;
+	Player_Socket* player;
 	GetSize = recv(sock, Buffer, buf, 0);
 	if (GetSize == SOCKET_ERROR) {
 		MessageBox(NULL,"error", "연결이 끊어졌습니다", 0);
@@ -111,7 +111,7 @@ Server_Player recv_Player(SOCKET sock) {
 	}
 
 	Buffer[GetSize] = '\0'; // 마지막 버퍼 비워줌
-	player = (Server_Player*)Buffer;
+	player = (Player_Socket*)Buffer;
 
 	return *player;
 }
