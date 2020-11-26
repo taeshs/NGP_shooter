@@ -29,7 +29,7 @@ typedef struct Server_Player
 	Player_Socket Players[MAX_Client];
 }Player_Other;
 
-Server_Player server_Player;
+//Server_Player server_Player;
 
 //서버관련
 void err_quit(const char* msg);

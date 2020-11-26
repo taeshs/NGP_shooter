@@ -47,6 +47,7 @@ float		  g_fDeltaTime;
 
 int maxhp = 10;
 int minhp = 0;
+int clientid;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
@@ -325,6 +326,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DrawCharater(hWnd, p1, memDC, backDC, P1Bitmap); // PLAYER 1
         DrawCharater(hWnd, p2, memDC, backDC, P2Bitmap); // PLAYER 2
 
+
+
         /*
         if (BGBitmap == NULL) {
             LPCWSTR word = TEXT("BG LOAD FAILED");
@@ -462,6 +465,9 @@ float timer = 0.f;
 void Run(HWND hWnd) {
     LARGE_INTEGER tTIme;
     QueryPerformanceCounter(&tTIme);
+      
+
+    
 
     g_fDeltaTime = (tTIme.QuadPart - g_tTime.QuadPart) / (float)g_tSecond.QuadPart;
     timer+=g_fDeltaTime;
@@ -472,27 +478,33 @@ void Run(HWND hWnd) {
 
     g_tTime = tTIme;
 
-    if (GetAsyncKeyState(VK_RIGHT) < 0) {
-        if (gameGround.right > p1.getX())
-        p1.move(1, 0, g_fDeltaTime);
-    }
-    else if (GetAsyncKeyState(VK_LEFT) < 0) {
-        if(gameGround.left < p1.getX())
-            p1.move(-1, 0, g_fDeltaTime);
-    }
-    if (GetAsyncKeyState(VK_UP) < 0) {
-        if (gameGround.top <  p1.getY())
-            p1.move(0, -1, g_fDeltaTime);
-    }
-    else if (GetAsyncKeyState(VK_DOWN) < 0) {
-        if (gameGround.bottom > p1.getY())
-            p1.move(0, 1, g_fDeltaTime);
-    }
+        if (GetAsyncKeyState(VK_RIGHT) < 0) {
+            if (gameGround.right > p1.getX())
+                p1.move(1, 0, g_fDeltaTime);
+        }
+        else if (GetAsyncKeyState(VK_LEFT) < 0) {
+            if (gameGround.left < p1.getX())
+                p1.move(-1, 0, g_fDeltaTime);
+        }
+        if (GetAsyncKeyState(VK_UP) < 0) {
+            if (gameGround.top < p1.getY())
+                p1.move(0, -1, g_fDeltaTime);
+        }
+        else if (GetAsyncKeyState(VK_DOWN) < 0) {
+            if (gameGround.bottom > p1.getY())
+                p1.move(0, 1, g_fDeltaTime);
+        }
 
-    for (int i = 0; i < p1.maxBulletCnt; i++) {
-        if(p1.bullets[i].alive)
-            p1.bullets[i].update(g_fDeltaTime, gameGround);
-    }
+        for (int i = 0; i < p1.maxBulletCnt; i++) {
+            if (p1.bullets[i].alive)
+                p1.bullets[i].update(g_fDeltaTime, gameGround);
+        }
+
+        Player_socket.posX = p1.getX();
+        Player_socket.posX = p1.getY();
+ 
+        server_Player.Players->posX = p1.getX();
+        server_Player.Players->posY = p1.getY();
 
     InvalidateRect(hWnd, NULL, FALSE);
 }
@@ -521,8 +533,21 @@ HBITMAP DrawSkill(HWND hWnd, int left, int top, int right, int bottom, HDC hdc, 
 
 DWORD WINAPI ProcessClient(LPVOID arg) {
     while (1) {
+
+        int retval;
+
+        retval = recv(sock, (char*)&clientid, sizeof(clientid), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+            closesocket(sock);
+        }
+        printf("-> 클라 아이디 (번호): %d\n", clientid);
+
         send_Player(sock, Player_socket);
         server_Player = recv_Player(sock);
+
+        p2.setPos(server_Player.Players->posX, server_Player.Players->posY);
+
     }
     return 0;
 }

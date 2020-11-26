@@ -90,6 +90,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     SOCKADDR_IN clientaddr;
     int addrlen;
 
+
     // 클라이언트 정보
     addrlen = sizeof(clientaddr);
     getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
@@ -109,6 +110,14 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         printf("클라이언트 종료: IP 주소=%s, 포트 번호=%d [인원 초과]\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
         return 0;
     }
+
+    retval = send(client_sock, (char*)&m_no, sizeof(m_no), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("recv()");
+        closesocket(client_sock);
+    }
+    printf("-> 클라 아이디 (번호): %d\n", m_no);
+
 
     while (1) {
 
