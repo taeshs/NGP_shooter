@@ -46,7 +46,8 @@ float		  g_fDeltaTime;
 
 int maxhp = 10;
 int minhp = 0;
-int clientid;
+int clientid,person;
+int person1 = 0;
 bool start = false;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -191,7 +192,7 @@ static Player player(80.0f, 200.0f), Other_Player(550.0f, 200.0f);            //
 // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
 
 
-HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap;
+HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap,LodBitmap;
 RECT gameGround;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -212,6 +213,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         S1Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP4));
         S2Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP5));
         S3Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP6));
+        LodBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP7));
 
 
         //p1.setPos(60.0f, 200.0f);
@@ -305,6 +307,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         memDC = CreateCompatibleDC(hdc);
         backDC = CreateCompatibleDC(hdc);
 
+        //if(person1 <= 1)
+           
+        
+
         if (clientid == 0 && start == false)
         {
             player.setPos(80.0f, 200.0f);
@@ -330,16 +336,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int mp_gage = (bufferRT.right - 100) / 10;
 
         gameGround = { 50,50,bufferRT.right - 190, bufferRT.bottom - 140 };
-
+        
 
         BackBit = CreateCompatibleBitmap(hdc, bufferRT.right, bufferRT.bottom);
         oldBackBit = (HBITMAP)SelectObject(backDC, BackBit);
         DeleteObject(BackBit);
         FillRect(backDC, &bufferRT, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
-        DrawBackground(hWnd, gameGround.left, gameGround.top, gameGround.right, gameGround.bottom, memDC, backDC, BGBitmap);
+        
         // rect로 배경 범위 만들기. -> 범위 내 이동
-
+        if(person <=0)
+            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, LodBitmap);
+        else
+        { 
+        DrawBackground(hWnd, gameGround.left, gameGround.top, gameGround.right, gameGround.bottom, memDC, backDC, BGBitmap);
+        
         DrawSkill(hWnd, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 360, memDC, backDC, S1Bitmap);
         DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 360, bufferRT.right - 50, bufferRT.bottom - 230, memDC, backDC, S2Bitmap);
         DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 230, bufferRT.right - 50, bufferRT.bottom - 100, memDC, backDC, S3Bitmap);
@@ -424,28 +435,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         // 임시 총알 
         
-
+        
         SelectObject(backDC, oldPen);
         DeleteObject(myPen);
         SelectObject(backDC, oldBrush);
         DeleteObject(myBrush);
-
+        
 
         //쓰고난 펜을 삭제해준다.
         DeleteObject(myPen);
         DeleteObject(myBrush);
 
         //test//////////////////////////////// 
-
+        }
 
         BitBlt(hdc, 0, 0, bufferRT.right, bufferRT.bottom, backDC, 0, 0, SRCCOPY);
 
         SelectObject(hdc, oldBackBit);
+
+
+        
+        
         
         DeleteDC(hdc);
         DeleteDC(backDC);
         DeleteDC(memDC);
         EndPaint(hWnd, &ps);
+
 
         //DeleteObject(BGBitmap);
         //DeleteObject(P1Bitmap);
@@ -553,20 +569,30 @@ HBITMAP DrawSkill(HWND hWnd, int left, int top, int right, int bottom, HDC hdc, 
 
 
 DWORD WINAPI ProcessClient(LPVOID arg) {
+
+    int retval;
+    int len;
+
+    retval = recv(sock, (char*)&len, sizeof(len), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("recv()");
+        closesocket(sock);
+    }
+    printf("-> 클라 아이디 (번호): %d\n", clientid);
+    //PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
+    // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
+
+
     while (1) {
 
-        int retval;
-
-        retval = recv(sock, (char*)&clientid, sizeof(clientid), 0);
+       
+        retval = recv(sock, (char*)&person, sizeof(person), 0);
         if (retval == SOCKET_ERROR) {
             err_display("recv()");
             closesocket(sock);
         }
-        printf("-> 클라 아이디 (번호): %d\n", clientid);
-        //PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
-        // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
-        
-        
+        printf("-> 클라 아이디 (번호): %d\n", person);
+     
 
         Player_socket.posX = player.getX();
         Player_socket.posY = player.getY();

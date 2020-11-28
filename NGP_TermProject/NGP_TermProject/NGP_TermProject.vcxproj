@@ -173,6 +173,7 @@
     <Image Include="Character.bmp" />
     <Image Include="character1.bmp" />
     <Image Include="character2.bmp" />
+    <Image Include="loading.bmp" />
     <Image Include="NGP_TermProject.ico" />
     <Image Include="small.ico" />
     <Image Include="스킬1.bmp" />

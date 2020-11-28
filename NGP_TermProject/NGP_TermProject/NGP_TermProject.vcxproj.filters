@@ -87,5 +87,8 @@
     <Image Include="스킬3.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="loading.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
 </Project>
