@@ -305,6 +305,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         memDC = CreateCompatibleDC(hdc);
         backDC = CreateCompatibleDC(hdc);
 
+        if (clientid == 0 && start == false)
+        {
+            player.setPos(80.0f, 200.0f);
+            Other_Player.setPos(550.0f, 200.0f);
+            player.bitmap = P1Bitmap;
+            Other_Player.bitmap = P2Bitmap;
+
+            start = true;
+        }
+        else if (clientid == 1 && start == false)
+        {
+            player.setPos(550.0f, 200.0f);
+            Other_Player.setPos(80.0f, 200.0f);
+            player.bitmap = P2Bitmap;
+            Other_Player.bitmap = P1Bitmap;
+
+            start = true;
+        }
 
         GetClientRect(hWnd, &bufferRT);
 
@@ -548,24 +566,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         //PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
         // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
         
-        if (clientid == 0 && start == false)
-        {
-            player.setPos(80.0f, 200.0f);
-            Other_Player.setPos(550.0f, 200.0f);
-            player.bitmap = P1Bitmap;
-            Other_Player.bitmap = P2Bitmap;
-
-            start = true;
-        }
-        else if (clientid == 1 && start == false)
-        {
-            player.setPos(550.0f, 200.0f);
-            Other_Player.setPos(80.0f, 200.0f);
-            player.bitmap = P2Bitmap;
-            Other_Player.bitmap = P1Bitmap;
-
-            start = true;
-        }
+        
 
         Player_socket.posX = player.getX();
         Player_socket.posY = player.getY();
@@ -574,7 +575,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
         Player_socket = recv_Player(sock);
 
-        Other_Player.setPos(Player_socket.posX, Player_socket.posY);
+        //Other_Player.setPos(Player_socket.posX, Player_socket.posY);
 
         //Other_Player = recv_Player(sock);          // 받은 정보로 otherplayer set.
 
