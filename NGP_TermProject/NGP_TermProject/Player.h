@@ -43,6 +43,8 @@ public:
 	int maxHp;
 	int maxMp;
 
+	HBITMAP bitmap;
+
 private:
 	float playerNo = 0;
 	float posX;

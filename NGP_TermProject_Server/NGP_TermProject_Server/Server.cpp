@@ -83,8 +83,8 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     char* buf = new char[BUFSIZE + 1];
 
     int m_no=no++;
-    int threadId = GetCurrentThreadId();
-    printf("스레드 생성 : %d\n", threadId);
+    //int threadId = GetCurrentThreadId();
+    //printf("스레드 생성 : %d\n", threadId);
 
     SOCKET client_sock = (SOCKET)arg;
     int retval;
@@ -99,18 +99,11 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     printf("%d번째 클라이언트 입니다", m_no + 1);
 
     // 인원체크
-    if (no == 3) {
+    if (no >= 3) {
         closesocket(client_sock);
         printf("클라이언트 종료: IP 주소=%s, 포트 번호=%d [인원 초과]\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
         return 0;
     }
-
-    retval = send(client_sock, (char*)&m_no, sizeof(m_no), 0);
-    if (retval == SOCKET_ERROR) {
-        err_display("recv()");
-        closesocket(client_sock);
-    }
-    printf("-> 클라 아이디 (번호): %d\n", m_no);
 
 
     while (1) {
@@ -118,6 +111,14 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         int retval;
         int buf;
         int GetSize;
+
+        retval = send(client_sock, (char*)&m_no, sizeof(m_no), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+            closesocket(client_sock);
+        }
+        printf("-> 클라 아이디 (번호): %d\n", m_no);
+
 
         retval = recvn(client_sock, (char*)&buf, sizeof(int), 0); // 데이터 받기(고정 길이)
         if (retval == SOCKET_ERROR) {
@@ -153,7 +154,6 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         Player[m_no].live = player->live;
       
 
-        //printf( "Xrotate : %f\n", server_data.player[0].camxrotate );
 
         //int retval;
         // 데이터 보내기( 구조체 크기를 먼저 보낸다. )
@@ -170,7 +170,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
     // closesocket()
     closesocket(client_sock);
-    printf("스레드 종료 : %d\n[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n\n", threadId,
+    printf("스레드 종료 : %d\n[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n\n", m_no,
         inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
     delete[] buf;
     return 0;

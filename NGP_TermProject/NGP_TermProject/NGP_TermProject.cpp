@@ -47,6 +47,7 @@ float		  g_fDeltaTime;
 int maxhp = 10;
 int minhp = 0;
 int clientid;
+bool start = false;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
@@ -185,7 +186,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 static POINT P1, P2;
 
-static Player p1(80.0f, 200.0f), p2(550.0f, 200.0f);            // P1 P2 -> PLAYER   OTHERPLAYER 변수이름 변경
+static Player player(80.0f, 200.0f), Other_Player(550.0f, 200.0f);            // P1 P2 -> PLAYER   OTHERPLAYER 변수이름 변경
 // 내번호가 0번이면 PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
 // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
 
@@ -251,15 +252,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (wParam)
         {
         case 0x31:
-            p1.setBullet(1);
+            player.setBullet(1);
             break;
 
         case 0x32:
-            p1.setBullet(2);
+            player.setBullet(2);
             break;
 
         case 0x33:
-            p1.setBullet(3);
+            player.setBullet(3);
             break;
         }
 
@@ -272,22 +273,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         posX = LOWORD(lParam);
         posY = HIWORD(lParam);
 
-        if (p1.getMp() >= p1.getBulletCost()) {
-            if (p1.shoot(p1.getX() + 20, p1.getY() + 20, posX, posY, g_fDeltaTime)) {
-                p1.subMp(p1.getBulletCost());
+        if (player.getMp() >= player.getBulletCost()) {
+            if (player.shoot(player.getX() + 20, player.getY() + 20, posX, posY, g_fDeltaTime)) {
+                player.subMp(player.getBulletCost());
             }
         }
         //          
 
 
         // if posx,y가 스킬1범위에 있을때
-        //            p1.subMp(1) 로 마나 소모, 스킬실행
+        //            player.subMp(1) 로 마나 소모, 스킬실행
 
          // if posx,y가 스킬2범위에 있을때
-        //            p1.subMp(1) 로 마나 소모, 스킬실행
+        //            player.subMp(1) 로 마나 소모, 스킬실행
 
          // if posx,y가 스킬3범위에 있을때
-        //            p1.subMp(1) 로 마나 소모, 스킬실행
+        //            player.subMp(1) 로 마나 소모, 스킬실행
 
         break;
 
@@ -326,8 +327,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 230, bufferRT.right - 50, bufferRT.bottom - 100, memDC, backDC, S3Bitmap);
 
         // left, top, right, bottom,
-        DrawCharater(hWnd, p1, memDC, backDC, P1Bitmap); // PLAYER 1
-        DrawCharater(hWnd, p2, memDC, backDC, P2Bitmap); // PLAYER 2
+
+         DrawCharater(hWnd, player, memDC, backDC, player.bitmap); // PLAYER 1
+         DrawCharater(hWnd, Other_Player, memDC, backDC, Other_Player.bitmap); // PLAYER 2
+
 
 
 
@@ -354,7 +357,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         //if (공격받을때) 
         
-        minhp = (((bufferRT.right - 150) / 2) / 10) * p1.maxHp;
+        minhp = (((bufferRT.right - 150) / 2) / 10) * player.maxHp;
 
         //Rectangle(backDC, 50, 30, ((bufferRT.right - 100)/2)- minhp, 50);
 
@@ -385,7 +388,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
         
         // 플레이어의 mp 수치 받아오기
-        int mp = p1.getMp();
+        int mp = player.getMp();
 
         RECT mpBar;
         mpBar.left = 50;
@@ -396,10 +399,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         Rectangle(backDC, mpBar.left,mpBar.top,mpBar.right,mpBar.bottom);
         // mp Bar
 
-        for (int i = 0; i < p1.maxBulletCnt; i++) {
-            if(p1.bullets[i].alive)
-                Rectangle(backDC, p1.bullets[i].bPosX - p1.bullets[i].bSize / 2, p1.bullets[i].bPosY + p1.bullets[i].bSize / 2
-                    , p1.bullets[i].bPosX + p1.bullets[i].bSize / 2, p1.bullets[i].bPosY - p1.bullets[i].bSize / 2);
+        for (int i = 0; i < player.maxBulletCnt; i++) {
+            if(player.bullets[i].alive)
+                Rectangle(backDC, player.bullets[i].bPosX - player.bullets[i].bSize / 2, player.bullets[i].bPosY + player.bullets[i].bSize / 2
+                    , player.bullets[i].bPosX + player.bullets[i].bSize / 2, player.bullets[i].bPosY - player.bullets[i].bSize / 2);
         }
         // 임시 총알 
         
@@ -476,35 +479,35 @@ void Run(HWND hWnd) {
     timer+=g_fDeltaTime;
     if (timer > 1.0f) {
         timer = 0.f;
-        p1.addMp();
+        player.addMp();
     }
 
     g_tTime = tTIme;
 
         if (GetAsyncKeyState(VK_RIGHT) < 0) {
-            if (gameGround.right > p1.getX())
-                p1.move(1, 0, g_fDeltaTime);
+            if (gameGround.right > player.getX())
+                player.move(1, 0, g_fDeltaTime);
         }
         else if (GetAsyncKeyState(VK_LEFT) < 0) {
-            if (gameGround.left < p1.getX())
-                p1.move(-1, 0, g_fDeltaTime);
+            if (gameGround.left < player.getX())
+                player.move(-1, 0, g_fDeltaTime);
         }
         if (GetAsyncKeyState(VK_UP) < 0) {
-            if (gameGround.top < p1.getY())
-                p1.move(0, -1, g_fDeltaTime);
+            if (gameGround.top < player.getY())
+                player.move(0, -1, g_fDeltaTime);
         }
         else if (GetAsyncKeyState(VK_DOWN) < 0) {
-            if (gameGround.bottom > p1.getY())
-                p1.move(0, 1, g_fDeltaTime);
+            if (gameGround.bottom > player.getY())
+                player.move(0, 1, g_fDeltaTime);
         }
 
-        for (int i = 0; i < p1.maxBulletCnt; i++) {
-            if (p1.bullets[i].alive)
-                p1.bullets[i].update(g_fDeltaTime, gameGround);
+        for (int i = 0; i < player.maxBulletCnt; i++) {
+            if (player.bullets[i].alive)
+                player.bullets[i].update(g_fDeltaTime, gameGround);
         }
 
-        //Player_socket.posX = p1.getX();
-        //Player_socket.posX = p1.getY();
+        //Player_socket.posX = player.getX();
+        //Player_socket.posX = player.getY();
 
     InvalidateRect(hWnd, NULL, FALSE);
 }
@@ -545,11 +548,35 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         //PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
         // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
         
-        // player_socket.posX = player.getPos();
-        // player_socket.posX = player.getPos();
-        // player_socket.posX = player.getPos();
+        if (clientid == 0 && start == false)
+        {
+            player.setPos(80.0f, 200.0f);
+            Other_Player.setPos(550.0f, 200.0f);
+            player.bitmap = P1Bitmap;
+            Other_Player.bitmap = P2Bitmap;
+
+            start = true;
+        }
+        else if (clientid == 1 && start == false)
+        {
+            player.setPos(550.0f, 200.0f);
+            Other_Player.setPos(80.0f, 200.0f);
+            player.bitmap = P2Bitmap;
+            Other_Player.bitmap = P1Bitmap;
+
+            start = true;
+        }
+
+        Player_socket.posX = player.getX();
+        Player_socket.posY = player.getY();
+
         send_Player(sock, Player_socket);
-        //otherPlayer = recv_Player(sock);          // 받은 정보로 otherplayer set.
+
+        Player_socket = recv_Player(sock);
+
+        Other_Player.setPos(Player_socket.posX, Player_socket.posY);
+
+        //Other_Player = recv_Player(sock);          // 받은 정보로 otherplayer set.
 
         //p2.setPos(server_Player.Players->posX, server_Player.Players->posY);
 
