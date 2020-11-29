@@ -112,18 +112,38 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     }
     //printf("-> 클라 아이디 (번호): %d\n", m_no);
 
-    while (1) {
+    retval = send(client_sock, (char*)&no, sizeof(no), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("recv()");
+        closesocket(client_sock);
+    }
+    printf("-> 클라 아이디 (번호): %d\n", no);
 
-        int retval;
-        int buf;
-        int GetSize;
-
+    while (no < 2) {
         retval = send(client_sock, (char*)&no, sizeof(no), 0);
         if (retval == SOCKET_ERROR) {
             err_display("recv()");
             closesocket(client_sock);
         }
         printf("-> 클라 아이디 (번호): %d\n", no);
+    }
+    if (no == 2) {
+        retval = send(client_sock, (char*)&no, sizeof(no), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+            closesocket(client_sock);
+        }
+        printf("-> 클라 아이디 (번호): %d\n", no);
+    }
+    
+
+    while (1) {
+
+        int retval;
+        int buf;
+        int GetSize;
+
+        
  
         retval = recvn(client_sock, (char*)&buf, sizeof(int), 0); // 데이터 받기(고정 길이)
         if (retval == SOCKET_ERROR) {

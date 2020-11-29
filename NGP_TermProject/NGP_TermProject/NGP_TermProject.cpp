@@ -90,8 +90,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-
+        if (person > 1) {
             Run(msg.hwnd);
+        }
+            
 
     }
     /*while (GetMessage(&msg, nullptr, 0, 0))
@@ -345,7 +347,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         
         // rect로 배경 범위 만들기. -> 범위 내 이동
-        if(person <=0)
+        if(person < 2)
             DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, LodBitmap);
         else
         { 
@@ -506,7 +508,7 @@ void Run(HWND hWnd) {
     LARGE_INTEGER tTIme;
     QueryPerformanceCounter(&tTIme);
       
-
+    
     
 
     g_fDeltaTime = (tTIme.QuadPart - g_tTime.QuadPart) / (float)g_tSecond.QuadPart;
@@ -582,17 +584,32 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     //PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
     // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
 
-
-    while (1) {
-
-       
+    retval = recv(sock, (char*)&person, sizeof(person), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("recv()");
+        closesocket(sock);
+    }
+    printf("-> 클라 아이디 (번호): %d\n", person);
+    while (person < 2) {
         retval = recv(sock, (char*)&person, sizeof(person), 0);
         if (retval == SOCKET_ERROR) {
             err_display("recv()");
             closesocket(sock);
         }
         printf("-> 클라 아이디 (번호): %d\n", person);
-     
+    }
+    if (person == 2) {
+        retval = recv(sock, (char*)&person, sizeof(person), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+            closesocket(sock);
+        }
+        printf("-> 클라 아이디 (번호): %d\n", person);
+    }
+
+
+    while (1) {
+
 
         Player_socket.posX = player.getX();
         Player_socket.posY = player.getY();
