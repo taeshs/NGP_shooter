@@ -58,5 +58,5 @@ private:
 	Bullet nowBullet = bullet1;
 
 
-	//BoundingBox bb;
+	BoundingBox bb;
 };

@@ -207,6 +207,21 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         }
         //if(Bullets[m_no]->bPosX > 0)
          //   printf("%d 번 총알 %f\n ", m_no, Bullets[m_no]->bPosX);
+
+        int gameState;
+        if (Player[0].hp <= 0) {
+            gameState = 1;
+        }
+        else if (Player[1].hp <= 0) {
+            gameState = 2;
+        }
+        else if (Player[0].hp <= 0 && Player[1].hp <= 0) {
+            gameState = 3;
+        }
+        else {
+            gameState = 0;
+        }
+        // 게임 오버 체크 
     }
 
     // closesocket()
