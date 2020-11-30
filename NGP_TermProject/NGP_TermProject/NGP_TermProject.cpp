@@ -21,6 +21,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름�
 SOCKET sock;
 
 Player_Socket Player_socket;
+Player_Socket Other_socket;
 
 
 DWORD WINAPI ClientMain(LPVOID);
@@ -85,6 +86,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // 기본 메시지 루프입니다:
     while (1)
     {
+        Sleep(10);
         if (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE))
         {
             if (msg.message == WM_QUIT)
@@ -243,15 +245,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);
         }
-    }
-    break;
-    case WM_TIMER:
-    {
-        nTime += 5;
-
-        InvalidateRect(hWnd, NULL, true);
-
-        
     }
     break;
     case WM_KEYDOWN:
@@ -588,7 +581,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     int retval;
     int len;
 
-    retval = recv(sock, (char*)&len, sizeof(len), 0);
+    retval = recv(sock, (char*)&clientid, sizeof(clientid), 0);
     if (retval == SOCKET_ERROR) {
         err_display("recv()");
         closesocket(sock);
@@ -611,14 +604,15 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         }
         printf("-> 클라 아이디 (번호): %d\n", person);
     }
-    if (person == 2) {
+    /*if (person == 2) {
         retval = recv(sock, (char*)&person, sizeof(person), 0);
         if (retval == SOCKET_ERROR) {
             err_display("recv()");
             closesocket(sock);
         }
         printf("-> 클라 아이디 (번호): %d\n", person);
-    }
+    }*/
+    
 
 
     while (1) {
@@ -632,7 +626,8 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         //send_Bullet(sock, player.bullets);
         //Other_bullet = recv_Bullet(sock);
 
-        //Other_Player.setPos(Player_socket.posX, Player_socket.posY);
+
+        Other_Player.setPos(Other_socket.posX, Other_socket.posY);
 
         //Other_Player = recv_Player(sock);          // 받은 정보로 otherplayer set.
 

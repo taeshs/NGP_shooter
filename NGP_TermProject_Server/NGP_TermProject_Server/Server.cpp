@@ -81,7 +81,7 @@ int val[10] = { 0, };   //
 Player_Socket Player[2];
 Bullet* Bullets[2];
 
-char Buffer[BUFSIZE];
+char Buffer[2][BUFSIZE];
 
 DWORD WINAPI ProcessClient(LPVOID arg) {
 
@@ -131,7 +131,9 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
             closesocket(client_sock);
         }
         printf("-> 클라 아이디 (번호): %d\n", no);
+
     }
+    /**/
     if (no == 2) {
         retval = send(client_sock, (char*)&no, sizeof(no), 0);
         if (retval == SOCKET_ERROR) {
@@ -148,7 +150,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         int buf;
         int GetSize;
 
-        
+        printf("0 : (%d, %d), 1 : (%d, %d) \n",Player[0].posX, Player[0].posY,  Player[1].posX, Player[1].posY);
  
         retval = recvn(client_sock, (char*)&buf, sizeof(int), 0); // 데이터 받기(고정 길이)
         if (retval == SOCKET_ERROR) {
@@ -159,14 +161,14 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         } 
         
         Player_Socket* player;
-        GetSize = recv(client_sock, Buffer, buf, 0);
+        GetSize = recv(client_sock, Buffer[m_no], buf, 0);
         if (GetSize == SOCKET_ERROR) {
             MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
             exit(1);
         }
 
-        Buffer[GetSize] = '\0'; // 마지막 버퍼 비워줌
-        player = (Player_Socket*)Buffer;
+        Buffer[m_no][GetSize] = '\0'; // 마지막 버퍼 비워줌
+        player = (Player_Socket*)Buffer[m_no];
         
         Player[m_no];
 
