@@ -88,7 +88,7 @@ void send_Player(SOCKET sock, Player_Socket player) {
 	}
 
 }
-
+char Buffer[BUFSIZE];
 Player_Socket recv_Player(SOCKET sock) {
 	int retval;
 	int buf;
@@ -102,7 +102,7 @@ Player_Socket recv_Player(SOCKET sock) {
 		
 	}
 
-	char Buffer[BUFSIZE];
+
 	Player_Socket* player;
 	GetSize = recv(sock, Buffer, buf, 0);
 	if (GetSize == SOCKET_ERROR) {

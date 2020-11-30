@@ -143,7 +143,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         int buf;
         int GetSize;
 
-        
+        printf("0 : (%d, %d), 1 : (%d, %d) \n",Player[0].posX, Player[0].posY,  Player[1].posX, Player[1].posY);
  
         retval = recvn(client_sock, (char*)&buf, sizeof(int), 0); // 데이터 받기(고정 길이)
         if (retval == SOCKET_ERROR) {

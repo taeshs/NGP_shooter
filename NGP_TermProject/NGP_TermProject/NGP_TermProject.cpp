@@ -578,7 +578,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     int retval;
     int len;
 
-    retval = recv(sock, (char*)&len, sizeof(len), 0);
+    retval = recv(sock, (char*)&clientid, sizeof(clientid), 0);
     if (retval == SOCKET_ERROR) {
         err_display("recv()");
         closesocket(sock);
@@ -621,7 +621,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
         Player_socket = recv_Player(sock);
 
-        //Other_Player.setPos(Player_socket.posX, Player_socket.posY);
+        Other_Player.setPos(Player_socket.posX, Player_socket.posY);
 
         //Other_Player = recv_Player(sock);          // 받은 정보로 otherplayer set.
 
