@@ -527,7 +527,7 @@ void Run(HWND hWnd) {
     g_tTime = tTIme;
 
 
-    if (GetAsyncKeyState(VK_RIGHT) < 0 || GetAsyncKeyState(0x44) < 0) {
+    /*if (GetAsyncKeyState(VK_RIGHT) < 0 || GetAsyncKeyState(0x44) < 0) {
         if (gameGround.right > player.getX())
             player.move(1, 0, g_fDeltaTime);
     }
@@ -542,6 +542,44 @@ void Run(HWND hWnd) {
     else if (GetAsyncKeyState(VK_DOWN) < 0 || GetAsyncKeyState(0x53) < 0) {
         if (gameGround.bottom > player.getY())
             player.move(0, 1, g_fDeltaTime);
+    }*/ // 기존 키 조작
+    
+    // 키 1p 2p 분리 - 혼자 테스트 용
+    if (clientid == 0) {
+        if (GetAsyncKeyState(VK_RIGHT) < 0) {
+            if (gameGround.right > player.getX())
+                player.move(1, 0, g_fDeltaTime);
+        }
+        else if (GetAsyncKeyState(VK_LEFT) < 0) {
+            if (gameGround.left < player.getX())
+                player.move(-1, 0, g_fDeltaTime);
+        }
+        if (GetAsyncKeyState(VK_UP) < 0) {
+            if (gameGround.top < player.getY())
+                player.move(0, -1, g_fDeltaTime);
+        }
+        else if (GetAsyncKeyState(VK_DOWN) < 0) {
+            if (gameGround.bottom > player.getY())
+                player.move(0, 1, g_fDeltaTime);
+        }
+    }
+    else {
+        if (GetAsyncKeyState(0x44) < 0) {
+            if (gameGround.right > player.getX())
+                player.move(1, 0, g_fDeltaTime);
+        }
+        else if (GetAsyncKeyState(0x41) < 0) {
+            if (gameGround.left < player.getX())
+                player.move(-1, 0, g_fDeltaTime);
+        }
+        if (GetAsyncKeyState(0x57) < 0) {
+            if (gameGround.top < player.getY())
+                player.move(0, -1, g_fDeltaTime);
+        }
+        else if (GetAsyncKeyState(0x53) < 0) {
+            if (gameGround.bottom > player.getY())
+                player.move(0, 1, g_fDeltaTime);
+        }
     }
 
 
