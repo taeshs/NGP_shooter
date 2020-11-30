@@ -195,14 +195,14 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         else {
             send_Player(client_sock, Player[0]);
         }
-        /*Bullets[m_no] = recv_Bullet(client_sock);
+        Bullets[m_no] = recv_Bullet(client_sock);
 
         if (m_no == 0) {
             send_Bullet(client_sock, Bullets[1]);
         }
         else {
             send_Bullet(client_sock, Bullets[0]);
-        }*/
+        }
         
 
     }

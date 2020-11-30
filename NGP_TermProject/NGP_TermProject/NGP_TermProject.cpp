@@ -623,8 +623,8 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
         Player_socket = recv_Player(sock);
         
-        //send_Bullet(sock, player.bullets);
-        //Other_bullet = recv_Bullet(sock);
+        send_Bullet(sock, player.bullets);
+        Other_bullet = recv_Bullet(sock);
 
 
         Other_Player.setPos(Other_socket.posX, Other_socket.posY);

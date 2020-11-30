@@ -115,7 +115,7 @@ Player_Socket recv_Player(SOCKET sock) {
 
 	return *player;
 }
-/*
+
 void send_Bullet(SOCKET sock, Bullet* bullet) {
 	int retval;
 
@@ -144,7 +144,7 @@ Bullet* recv_Bullet(SOCKET sock) {
 
 	return bullet;
 }
-*/
+
 
 
 
