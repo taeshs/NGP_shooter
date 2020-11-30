@@ -23,8 +23,6 @@ typedef struct Player_Socket
 	bool live;
 }Player_Socket;
 
-//struct Bullet;
-
 //Server_Player server_Player;
 
 //서버관련

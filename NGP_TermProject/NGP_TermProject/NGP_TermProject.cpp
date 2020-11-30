@@ -4,6 +4,7 @@
 #include "NGP_TermProject.h"
 #include "Global.h"
 #include "winsock.h"
+#include "Player.h"
 #pragma comment(lib, "Msimg32.lib")
 
 
@@ -438,11 +439,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         , player.bullets[i].bPosX + player.bullets[i].bSize / 2, player.bullets[i].bPosY - player.bullets[i].bSize / 2);
             }
 
-            for (int i = 0; i < player.maxBulletCnt; i++) {
+            /*for (int i = 0; i < player.maxBulletCnt; i++) {
                 if (Other_bullet[i].alive)
                     Rectangle(backDC, Other_bullet[i].bPosX - Other_bullet[i].bSize / 2, Other_bullet[i].bPosY + Other_bullet[i].bSize / 2
                         , Other_bullet[i].bPosX + Other_bullet[i].bSize / 2, Other_bullet[i].bPosY - Other_bullet[i].bSize / 2);
-            }
+            }*/
+            
             // 임시 총알 
 
 

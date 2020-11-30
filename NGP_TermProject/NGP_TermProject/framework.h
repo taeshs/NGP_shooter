@@ -15,8 +15,6 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
-#include "Player.h"
-#include "winsock.h"
 
 
 
