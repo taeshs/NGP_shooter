@@ -23,6 +23,7 @@ typedef struct Player_Socket
 	bool live;
 }Player_Socket;
 
+//struct Bullet;
 
 //Server_Player server_Player;
 
@@ -32,5 +33,9 @@ void err_display(const char* msg);
 SOCKET init_socket();
 void send_Player(SOCKET sock, Player_Socket player);
 Player_Socket recv_Player(SOCKET sock);
+
+//void send_Bullet(SOCKET sock, Bullet* bullet);
+
+//Bullet* recv_Bullet(SOCKET sock);
 
 //extern char IPaddres[MAX_PATH];

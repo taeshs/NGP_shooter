@@ -50,6 +50,8 @@ int clientid,person;
 int person1 = 0;
 bool start = false;
 
+Bullet* Other_bullet;
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR    lpCmdLine,
@@ -350,105 +352,111 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         if(person < 2)
             DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, LodBitmap);
         else
-        { 
-        DrawBackground(hWnd, gameGround.left, gameGround.top, gameGround.right, gameGround.bottom, memDC, backDC, BGBitmap);
-        
-        DrawSkill(hWnd, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 360, memDC, backDC, S1Bitmap);
-        DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 360, bufferRT.right - 50, bufferRT.bottom - 230, memDC, backDC, S2Bitmap);
-        DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 230, bufferRT.right - 50, bufferRT.bottom - 100, memDC, backDC, S3Bitmap);
+        {
+            DrawBackground(hWnd, gameGround.left, gameGround.top, gameGround.right, gameGround.bottom, memDC, backDC, BGBitmap);
 
-        // left, top, right, bottom,
+            DrawSkill(hWnd, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 360, memDC, backDC, S1Bitmap);
+            DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 360, bufferRT.right - 50, bufferRT.bottom - 230, memDC, backDC, S2Bitmap);
+            DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 230, bufferRT.right - 50, bufferRT.bottom - 100, memDC, backDC, S3Bitmap);
 
-         DrawCharater(hWnd, player, memDC, backDC, player.bitmap); // PLAYER 1
-         DrawCharater(hWnd, Other_Player, memDC, backDC, Other_Player.bitmap); // PLAYER 2
+            // left, top, right, bottom,
 
-
+            DrawCharater(hWnd, player, memDC, backDC, player.bitmap); // PLAYER 1
+            DrawCharater(hWnd, Other_Player, memDC, backDC, Other_Player.bitmap); // PLAYER 2
 
 
-        /*
-        if (BGBitmap == NULL) {
-            LPCWSTR word = TEXT("BG LOAD FAILED");
-            TextOut(backDC, 200, 300, word, lstrlen(word));
-        }
-        */
 
-        //test/////////////////////////////
- 
-        //empty mp bar
-        Rectangle(backDC, 50, bufferRT.bottom - 100, bufferRT.right - 54, bufferRT.bottom - 50);
 
-        HPEN myPen, oldPen;
-        HBRUSH myBrush, oldBrush;
+           /*
+           if (BGBitmap == NULL) {
+               LPCWSTR word = TEXT("BG LOAD FAILED");
+               TextOut(backDC, 200, 300, word, lstrlen(word));
+           }
+           */
 
-        myPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-        oldPen = (HPEN)SelectObject(backDC, myPen);
+           //test/////////////////////////////
 
-        myBrush = CreateSolidBrush(RGB(255, 0, 0));
-        oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
+           //empty mp bar
+            Rectangle(backDC, 50, bufferRT.bottom - 100, bufferRT.right - 54, bufferRT.bottom - 50);
 
-        //if (공격받을때) 
-        
-        minhp = (((bufferRT.right - 150) / 2) / 10) * player.maxHp;
+            HPEN myPen, oldPen;
+            HBRUSH myBrush, oldBrush;
 
-        //Rectangle(backDC, 50, 30, ((bufferRT.right - 100)/2)- minhp, 50);
+            myPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+            oldPen = (HPEN)SelectObject(backDC, myPen);
 
-        Rectangle(backDC, 50, 30, minhp+50, 50);
+            myBrush = CreateSolidBrush(RGB(255, 0, 0));
+            oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
 
-        SelectObject(backDC, oldPen);
-        DeleteObject(myPen);
-        SelectObject(backDC, oldBrush);
-        DeleteObject(myBrush);
+            //if (공격받을때) 
 
-        myBrush = CreateSolidBrush(RGB(0, 0, 255));
-        oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
+            minhp = (((bufferRT.right - 150) / 2) / 10) * player.maxHp;
 
-        Rectangle(backDC, ((bufferRT.right - 100) / 2), 30, bufferRT.right - 150, 50);// -150 + 50
+            //Rectangle(backDC, 50, 30, ((bufferRT.right - 100)/2)- minhp, 50);
 
-        SelectObject(backDC, oldPen);
-        DeleteObject(myPen);
-        SelectObject(backDC, oldBrush);
-        DeleteObject(myBrush);
+            Rectangle(backDC, 50, 30, minhp + 50, 50);
 
-        // hp bar right를 hp비율로 나눔
-        
+            SelectObject(backDC, oldPen);
+            DeleteObject(myPen);
+            SelectObject(backDC, oldBrush);
+            DeleteObject(myBrush);
 
-        //Rectangle(backDC, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 100);// 440);// 
-        // skill bar
+            myBrush = CreateSolidBrush(RGB(0, 0, 255));
+            oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
 
-        myBrush = CreateSolidBrush(RGB(0, 255, 0));
-        oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
-        
-        // 플레이어의 mp 수치 받아오기
-        int mp = player.getMp();
+            Rectangle(backDC, ((bufferRT.right - 100) / 2), 30, bufferRT.right - 150, 50);// -150 + 50
 
-        RECT mpBar;
-        mpBar.left = 50;
-        mpBar.top = bufferRT.bottom - 100;
-        mpBar.right = (50 + mp_gage * mp < bufferRT.right - 50) ? 50 + mp_gage * mp : bufferRT.right - 50;
-        mpBar.bottom = bufferRT.bottom - 50;
+            SelectObject(backDC, oldPen);
+            DeleteObject(myPen);
+            SelectObject(backDC, oldBrush);
+            DeleteObject(myBrush);
 
-        Rectangle(backDC, mpBar.left,mpBar.top,mpBar.right,mpBar.bottom);
-        // mp Bar
+            // hp bar right를 hp비율로 나눔
 
-        for (int i = 0; i < player.maxBulletCnt; i++) {
-            if(player.bullets[i].alive)
-                Rectangle(backDC, player.bullets[i].bPosX - player.bullets[i].bSize / 2, player.bullets[i].bPosY + player.bullets[i].bSize / 2
-                    , player.bullets[i].bPosX + player.bullets[i].bSize / 2, player.bullets[i].bPosY - player.bullets[i].bSize / 2);
-        }
-        // 임시 총알 
-        
-        
-        SelectObject(backDC, oldPen);
-        DeleteObject(myPen);
-        SelectObject(backDC, oldBrush);
-        DeleteObject(myBrush);
-        
 
-        //쓰고난 펜을 삭제해준다.
-        DeleteObject(myPen);
-        DeleteObject(myBrush);
+            //Rectangle(backDC, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 100);// 440);// 
+            // skill bar
 
-        //test//////////////////////////////// 
+            myBrush = CreateSolidBrush(RGB(0, 255, 0));
+            oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
+
+            // 플레이어의 mp 수치 받아오기
+            int mp = player.getMp();
+
+            RECT mpBar;
+            mpBar.left = 50;
+            mpBar.top = bufferRT.bottom - 100;
+            mpBar.right = (50 + mp_gage * mp < bufferRT.right - 50) ? 50 + mp_gage * mp : bufferRT.right - 50;
+            mpBar.bottom = bufferRT.bottom - 50;
+
+            Rectangle(backDC, mpBar.left, mpBar.top, mpBar.right, mpBar.bottom);
+            // mp Bar
+
+            for (int i = 0; i < player.maxBulletCnt; i++) {
+                if (player.bullets[i].alive)
+                    Rectangle(backDC, player.bullets[i].bPosX - player.bullets[i].bSize / 2, player.bullets[i].bPosY + player.bullets[i].bSize / 2
+                        , player.bullets[i].bPosX + player.bullets[i].bSize / 2, player.bullets[i].bPosY - player.bullets[i].bSize / 2);
+            }
+
+            for (int i = 0; i < player.maxBulletCnt; i++) {
+                if (Other_bullet[i].alive)
+                    Rectangle(backDC, Other_bullet[i].bPosX - Other_bullet[i].bSize / 2, Other_bullet[i].bPosY + Other_bullet[i].bSize / 2
+                        , Other_bullet[i].bPosX + Other_bullet[i].bSize / 2, Other_bullet[i].bPosY - Other_bullet[i].bSize / 2);
+            }
+            // 임시 총알 
+
+
+            SelectObject(backDC, oldPen);
+            DeleteObject(myPen);
+            SelectObject(backDC, oldBrush);
+            DeleteObject(myBrush);
+
+
+            //쓰고난 펜을 삭제해준다.
+            DeleteObject(myPen);
+            DeleteObject(myBrush);
+
+            //test//////////////////////////////// 
         }
 
         BitBlt(hdc, 0, 0, bufferRT.right, bufferRT.bottom, backDC, 0, 0, SRCCOPY);
@@ -543,6 +551,7 @@ void Run(HWND hWnd) {
         if (player.bullets[i].alive)
             player.bullets[i].update(g_fDeltaTime, gameGround);
     }
+    //일단 받아서 그리는걸로 하고, 이동이 어색하면 경로 받아서 같이 업데이트 시키는 방식으로.
 
     //Player_socket.posX = player.getX();
     //Player_socket.posX = player.getY();
@@ -611,14 +620,15 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
 
     while (1) {
-
-
         Player_socket.posX = player.getX();
         Player_socket.posY = player.getY();
 
         send_Player(sock, Player_socket);
 
         Player_socket = recv_Player(sock);
+        
+        //send_Bullet(sock, player.bullets);
+        //Other_bullet = recv_Bullet(sock);
 
         //Other_Player.setPos(Player_socket.posX, Player_socket.posY);
 

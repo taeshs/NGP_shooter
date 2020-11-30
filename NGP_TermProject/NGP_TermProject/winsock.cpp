@@ -115,6 +115,37 @@ Player_Socket recv_Player(SOCKET sock) {
 
 	return *player;
 }
+/*
+void send_Bullet(SOCKET sock, Bullet* bullet) {
+	int retval;
+
+	// 데이터 보내기( 구조체 데이터를 보낸다. )
+	retval = send(sock, (char*)&bullet, sizeof(Bullet*), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+		exit(1);
+	}
+}
+
+Bullet* recv_Bullet(SOCKET sock) {
+	int retval;
+	int GetSize;
+
+	char Buffer[BUFSIZE];
+	Bullet* bullet;
+	GetSize = recv(sock, Buffer, sizeof(Bullet*), 0);
+	if (GetSize == SOCKET_ERROR) {
+		MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
+		exit(1);
+	}
+
+	Buffer[GetSize] = '\0'; // 마지막 버퍼 비워줌
+	bullet = (Bullet*)Buffer;
+
+	return bullet;
+}
+*/
+
 
 
 
