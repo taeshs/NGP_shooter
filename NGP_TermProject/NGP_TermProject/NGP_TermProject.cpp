@@ -601,14 +601,15 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         }
         printf("-> 클라 아이디 (번호): %d\n", person);
     }
-    if (person == 2) {
+    /*if (person == 2) {
         retval = recv(sock, (char*)&person, sizeof(person), 0);
         if (retval == SOCKET_ERROR) {
             err_display("recv()");
             closesocket(sock);
         }
         printf("-> 클라 아이디 (번호): %d\n", person);
-    }
+    }*/
+    
 
 
     while (1) {

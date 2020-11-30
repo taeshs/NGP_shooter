@@ -126,7 +126,9 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
             closesocket(client_sock);
         }
         printf("-> 클라 아이디 (번호): %d\n", no);
+
     }
+    /**/
     if (no == 2) {
         retval = send(client_sock, (char*)&no, sizeof(no), 0);
         if (retval == SOCKET_ERROR) {
