@@ -76,7 +76,7 @@ int val[10] = { 0, };   //
 
 Player_Socket Player[2];
 
-char Buffer[BUFSIZE];
+char Buffer[2][BUFSIZE];
 
 DWORD WINAPI ProcessClient(LPVOID arg) {
 
@@ -157,14 +157,14 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
         
         Player_Socket* player;
-        GetSize = recv(client_sock, Buffer, buf, 0);
+        GetSize = recv(client_sock, Buffer[m_no], buf, 0);
         if (GetSize == SOCKET_ERROR) {
             MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
             exit(1);
         }
 
-        Buffer[GetSize] = '\0'; // 마지막 버퍼 비워줌
-        player = (Player_Socket*)Buffer;
+        Buffer[m_no][GetSize] = '\0'; // 마지막 버퍼 비워줌
+        player = (Player_Socket*)Buffer[m_no];
         
         Player[m_no];
 
