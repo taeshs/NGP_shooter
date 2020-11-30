@@ -17,6 +17,8 @@ public:
 	float getX() { return posX; }
 	float getY() { return posY; }
 
+
+
 	int getMp() { return mp; }
 
 	void addMp() { if (mp < maxMp) { mp++; } }
@@ -40,6 +42,8 @@ public:
 
 	int maxHp;
 	int maxMp;
+
+	HBITMAP bitmap;
 
 private:
 	float playerNo = 0;

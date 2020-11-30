@@ -20,7 +20,6 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름�
 SOCKET sock;
 
 Player_Socket Player_socket;
-Server_Player server_Player;
 
 
 DWORD WINAPI ClientMain(LPVOID);
@@ -47,6 +46,9 @@ float		  g_fDeltaTime;
 
 int maxhp = 10;
 int minhp = 0;
+int clientid,person;
+int person1 = 0;
+bool start = false;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
@@ -88,8 +90,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-
+        if (person > 1) {
             Run(msg.hwnd);
+        }
+            
 
     }
     /*while (GetMessage(&msg, nullptr, 0, 0))
@@ -185,8 +189,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 static POINT P1, P2;
 
-static Player p1(80.0f, 200.0f), p2(550.0f, 200.0f);
-HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap;
+static Player player(80.0f, 200.0f), Other_Player(550.0f, 200.0f);            // P1 P2 -> PLAYER   OTHERPLAYER 변수이름 변경
+// 내번호가 0번이면 PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
+// 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
+
+
+HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap,LodBitmap;
 RECT gameGround;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -207,6 +215,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         S1Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP4));
         S2Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP5));
         S3Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP6));
+        LodBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP7));
 
 
         //p1.setPos(60.0f, 200.0f);
@@ -247,15 +256,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (wParam)
         {
         case 0x31:
-            p1.setBullet(1);
+            player.setBullet(1);
             break;
 
         case 0x32:
-            p1.setBullet(2);
+            player.setBullet(2);
             break;
 
         case 0x33:
-            p1.setBullet(3);
+            player.setBullet(3);
             break;
         }
 
@@ -268,22 +277,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         posX = LOWORD(lParam);
         posY = HIWORD(lParam);
 
-        if (p1.getMp() >= p1.getBulletCost()) {
-            if (p1.shoot(p1.getX() + 20, p1.getY() + 20, posX, posY, g_fDeltaTime)) {
-                p1.subMp(p1.getBulletCost());
+        if (player.getMp() >= player.getBulletCost()) {
+            if (player.shoot(player.getX() + 20, player.getY() + 20, posX, posY, g_fDeltaTime)) {
+                player.subMp(player.getBulletCost());
             }
         }
         //          
 
 
         // if posx,y가 스킬1범위에 있을때
-        //            p1.subMp(1) 로 마나 소모, 스킬실행
+        //            player.subMp(1) 로 마나 소모, 스킬실행
 
          // if posx,y가 스킬2범위에 있을때
-        //            p1.subMp(1) 로 마나 소모, 스킬실행
+        //            player.subMp(1) 로 마나 소모, 스킬실행
 
          // if posx,y가 스킬3범위에 있을때
-        //            p1.subMp(1) 로 마나 소모, 스킬실행
+        //            player.subMp(1) 로 마나 소모, 스킬실행
 
         break;
 
@@ -300,6 +309,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         memDC = CreateCompatibleDC(hdc);
         backDC = CreateCompatibleDC(hdc);
 
+        //if(person1 <= 1)
+           
+        
+
+        if (clientid == 0 && start == false)
+        {
+            player.setPos(80.0f, 200.0f);
+            Other_Player.setPos(550.0f, 200.0f);
+            player.bitmap = P1Bitmap;
+            Other_Player.bitmap = P2Bitmap;
+
+            start = true;
+        }
+        else if (clientid == 1 && start == false)
+        {
+            player.setPos(550.0f, 200.0f);
+            Other_Player.setPos(80.0f, 200.0f);
+            player.bitmap = P2Bitmap;
+            Other_Player.bitmap = P1Bitmap;
+
+            start = true;
+        }
 
         GetClientRect(hWnd, &bufferRT);
 
@@ -307,23 +338,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int mp_gage = (bufferRT.right - 100) / 10;
 
         gameGround = { 50,50,bufferRT.right - 190, bufferRT.bottom - 140 };
-
+        
 
         BackBit = CreateCompatibleBitmap(hdc, bufferRT.right, bufferRT.bottom);
         oldBackBit = (HBITMAP)SelectObject(backDC, BackBit);
         DeleteObject(BackBit);
         FillRect(backDC, &bufferRT, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
-        DrawBackground(hWnd, gameGround.left, gameGround.top, gameGround.right, gameGround.bottom, memDC, backDC, BGBitmap);
+        
         // rect로 배경 범위 만들기. -> 범위 내 이동
-
+        if(person < 2)
+            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, LodBitmap);
+        else
+        { 
+        DrawBackground(hWnd, gameGround.left, gameGround.top, gameGround.right, gameGround.bottom, memDC, backDC, BGBitmap);
+        
         DrawSkill(hWnd, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 360, memDC, backDC, S1Bitmap);
         DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 360, bufferRT.right - 50, bufferRT.bottom - 230, memDC, backDC, S2Bitmap);
         DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 230, bufferRT.right - 50, bufferRT.bottom - 100, memDC, backDC, S3Bitmap);
 
         // left, top, right, bottom,
-        DrawCharater(hWnd, p1, memDC, backDC, P1Bitmap); // PLAYER 1
-        DrawCharater(hWnd, p2, memDC, backDC, P2Bitmap); // PLAYER 2
+
+         DrawCharater(hWnd, player, memDC, backDC, player.bitmap); // PLAYER 1
+         DrawCharater(hWnd, Other_Player, memDC, backDC, Other_Player.bitmap); // PLAYER 2
+
+
+
 
         /*
         if (BGBitmap == NULL) {
@@ -348,7 +388,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         //if (공격받을때) 
         
-        minhp = (((bufferRT.right - 150) / 2) / 10) * p1.maxHp;
+        minhp = (((bufferRT.right - 150) / 2) / 10) * player.maxHp;
 
         //Rectangle(backDC, 50, 30, ((bufferRT.right - 100)/2)- minhp, 50);
 
@@ -379,7 +419,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
         
         // 플레이어의 mp 수치 받아오기
-        int mp = p1.getMp();
+        int mp = player.getMp();
 
         RECT mpBar;
         mpBar.left = 50;
@@ -390,35 +430,40 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         Rectangle(backDC, mpBar.left,mpBar.top,mpBar.right,mpBar.bottom);
         // mp Bar
 
-        for (int i = 0; i < p1.maxBulletCnt; i++) {
-            if(p1.bullets[i].alive)
-                Rectangle(backDC, p1.bullets[i].bPosX - p1.bullets[i].bSize / 2, p1.bullets[i].bPosY + p1.bullets[i].bSize / 2
-                    , p1.bullets[i].bPosX + p1.bullets[i].bSize / 2, p1.bullets[i].bPosY - p1.bullets[i].bSize / 2);
+        for (int i = 0; i < player.maxBulletCnt; i++) {
+            if(player.bullets[i].alive)
+                Rectangle(backDC, player.bullets[i].bPosX - player.bullets[i].bSize / 2, player.bullets[i].bPosY + player.bullets[i].bSize / 2
+                    , player.bullets[i].bPosX + player.bullets[i].bSize / 2, player.bullets[i].bPosY - player.bullets[i].bSize / 2);
         }
         // 임시 총알 
         
-
+        
         SelectObject(backDC, oldPen);
         DeleteObject(myPen);
         SelectObject(backDC, oldBrush);
         DeleteObject(myBrush);
-
+        
 
         //쓰고난 펜을 삭제해준다.
         DeleteObject(myPen);
         DeleteObject(myBrush);
 
         //test//////////////////////////////// 
-
+        }
 
         BitBlt(hdc, 0, 0, bufferRT.right, bufferRT.bottom, backDC, 0, 0, SRCCOPY);
 
         SelectObject(hdc, oldBackBit);
+
+
+        
+        
         
         DeleteDC(hdc);
         DeleteDC(backDC);
         DeleteDC(memDC);
         EndPaint(hWnd, &ps);
+
 
         //DeleteObject(BGBitmap);
         //DeleteObject(P1Bitmap);
@@ -463,36 +508,44 @@ void Run(HWND hWnd) {
     LARGE_INTEGER tTIme;
     QueryPerformanceCounter(&tTIme);
 
+
+
+
     g_fDeltaTime = (tTIme.QuadPart - g_tTime.QuadPart) / (float)g_tSecond.QuadPart;
-    timer+=g_fDeltaTime;
+    timer += g_fDeltaTime;
     if (timer > 1.0f) {
         timer = 0.f;
-        p1.addMp();
+        player.addMp();
     }
 
     g_tTime = tTIme;
 
+
     if (GetAsyncKeyState(VK_RIGHT) < 0 || GetAsyncKeyState(0x44) < 0) {
-        if (gameGround.right > p1.getX())
-        p1.move(1, 0, g_fDeltaTime);
+        if (gameGround.right > player.getX())
+            player.move(1, 0, g_fDeltaTime);
     }
     else if (GetAsyncKeyState(VK_LEFT) < 0 || GetAsyncKeyState(0x41) < 0) {
-        if(gameGround.left < p1.getX())
-            p1.move(-1, 0, g_fDeltaTime);
+        if (gameGround.left < player.getX())
+            player.move(-1, 0, g_fDeltaTime);
     }
     if (GetAsyncKeyState(VK_UP) < 0 || GetAsyncKeyState(0x57) < 0) {
-        if (gameGround.top <  p1.getY())
-            p1.move(0, -1, g_fDeltaTime);
+        if (gameGround.top < player.getY())
+            player.move(0, -1, g_fDeltaTime);
     }
     else if (GetAsyncKeyState(VK_DOWN) < 0 || GetAsyncKeyState(0x53) < 0) {
-        if (gameGround.bottom > p1.getY())
-            p1.move(0, 1, g_fDeltaTime);
+        if (gameGround.bottom > player.getY())
+            player.move(0, 1, g_fDeltaTime);
     }
 
-    for (int i = 0; i < p1.maxBulletCnt; i++) {
-        if(p1.bullets[i].alive)
-            p1.bullets[i].update(g_fDeltaTime, gameGround);
+
+    for (int i = 0; i < player.maxBulletCnt; i++) {
+        if (player.bullets[i].alive)
+            player.bullets[i].update(g_fDeltaTime, gameGround);
     }
+
+    //Player_socket.posX = player.getX();
+    //Player_socket.posX = player.getY();
 
     InvalidateRect(hWnd, NULL, FALSE);
 }
@@ -520,9 +573,59 @@ HBITMAP DrawSkill(HWND hWnd, int left, int top, int right, int bottom, HDC hdc, 
 
 
 DWORD WINAPI ProcessClient(LPVOID arg) {
+
+    int retval;
+    int len;
+
+    retval = recv(sock, (char*)&len, sizeof(len), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("recv()");
+        closesocket(sock);
+    }
+    printf("-> 클라 아이디 (번호): %d\n", clientid);
+    //PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
+    // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
+
+    retval = recv(sock, (char*)&person, sizeof(person), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("recv()");
+        closesocket(sock);
+    }
+    printf("-> 클라 아이디 (번호): %d\n", person);
+    while (person < 2) {
+        retval = recv(sock, (char*)&person, sizeof(person), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+            closesocket(sock);
+        }
+        printf("-> 클라 아이디 (번호): %d\n", person);
+    }
+    if (person == 2) {
+        retval = recv(sock, (char*)&person, sizeof(person), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+            closesocket(sock);
+        }
+        printf("-> 클라 아이디 (번호): %d\n", person);
+    }
+
+
     while (1) {
+
+
+        Player_socket.posX = player.getX();
+        Player_socket.posY = player.getY();
+
         send_Player(sock, Player_socket);
-        server_Player = recv_Player(sock);
+
+        Player_socket = recv_Player(sock);
+
+        //Other_Player.setPos(Player_socket.posX, Player_socket.posY);
+
+        //Other_Player = recv_Player(sock);          // 받은 정보로 otherplayer set.
+
+        //p2.setPos(server_Player.Players->posX, server_Player.Players->posY);
+
     }
     return 0;
 }
@@ -537,3 +640,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 
     return 0;
 }
+
+
+// 만약에 받은 플레이어 번호가 0번이면 1P -> 

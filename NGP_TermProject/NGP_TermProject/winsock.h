@@ -21,21 +21,16 @@ typedef struct Player_Socket
 	int hp;
 	bool isAttack;
 	bool live;
-
 }Player_Socket;
 
-typedef struct Server_Player
-{
-	Player_Socket Players[MAX_Client];
-}Player_Other;
 
-Server_Player server_Player;
+//Server_Player server_Player;
 
 //서버관련
 void err_quit(const char* msg);
 void err_display(const char* msg);
 SOCKET init_socket();
 void send_Player(SOCKET sock, Player_Socket player);
-Server_Player recv_Player(SOCKET sock);
+Player_Socket recv_Player(SOCKET sock);
 
 //extern char IPaddres[MAX_PATH];

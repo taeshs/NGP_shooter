@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include "server.h"
 
 using namespace std;
 
@@ -13,8 +14,13 @@ using namespace std;
 
 #define MIN(a,b) a>b?b:a
 
+void send_Player(SOCKET, Player_Socket);
+
+DWORD WINAPI ProcessClient(LPVOID);
+//Client_Player recv_Player(SOCKET sock);
+
 // 소켓 함수 오류 출력 후 종료
-void err_quit(char* msg)
+void err_quit(const char* msg)
 {
     LPVOID lpMsgBuf;
     FormatMessage(
@@ -28,7 +34,7 @@ void err_quit(char* msg)
 }
 
 // 소켓 함수 오류 출력
-void err_display(char* msg)
+void err_display(const char* msg)
 {
     LPVOID lpMsgBuf;
     FormatMessage(
@@ -66,44 +72,130 @@ int recvn(SOCKET s, char* buf, int len, int flags)
 
 
 int no = 0;
-int val[10] = { 0, };
+int val[10] = { 0, };   //
 
+Player_Socket Player[2];
+
+char Buffer[BUFSIZE];
 
 DWORD WINAPI ProcessClient(LPVOID arg) {
 
     char* buf = new char[BUFSIZE + 1];
 
-    int m_no = no++;
-    int threadId = GetCurrentThreadId();
-    printf("스레드 생성 : %d\n", threadId);
+    int m_no=no++;
+    //int threadId = GetCurrentThreadId();
+    //printf("스레드 생성 : %d\n", threadId);
 
     SOCKET client_sock = (SOCKET)arg;
     int retval;
     SOCKADDR_IN clientaddr;
     int addrlen;
 
-    // 클라이언트 정보 얻기
+
+    // 클라이언트 정보
     addrlen = sizeof(clientaddr);
     getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 
-    char file_name[50];
-    ZeroMemory(file_name, sizeof(file_name));
-    int len;
-    int f_len;
+    printf("%d번째 클라이언트 입니다", m_no + 1);
 
-
-    /*
-    retval = recvn(client_sock, (char*)&f_len, sizeof(int), 0);
-    if (retval == SOCKET_ERROR) {
-        err_display("recv()1");
-        return NULL;
+    // 인원체크
+    if (no >= 3) {
+        closesocket(client_sock);
+        printf("클라이언트 종료: IP 주소=%s, 포트 번호=%d [인원 초과]\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
+        return 0;
     }
-    */
 
+    retval = send(client_sock, (char*)&m_no, sizeof(m_no), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("recv()");
+        closesocket(client_sock);
+    }
+    //printf("-> 클라 아이디 (번호): %d\n", m_no);
+
+    retval = send(client_sock, (char*)&no, sizeof(no), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("recv()");
+        closesocket(client_sock);
+    }
+    printf("-> 클라 아이디 (번호): %d\n", no);
+
+    while (no < 2) {
+        retval = send(client_sock, (char*)&no, sizeof(no), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+            closesocket(client_sock);
+        }
+        printf("-> 클라 아이디 (번호): %d\n", no);
+    }
+    if (no == 2) {
+        retval = send(client_sock, (char*)&no, sizeof(no), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+            closesocket(client_sock);
+        }
+        printf("-> 클라 아이디 (번호): %d\n", no);
+    }
+    
+
+    while (1) {
+
+        int retval;
+        int buf;
+        int GetSize;
+
+        
+ 
+        retval = recvn(client_sock, (char*)&buf, sizeof(int), 0); // 데이터 받기(고정 길이)
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+        }
+        else if (retval == 0) {
+
+        }
+
+        
+        Player_Socket* player;
+        GetSize = recv(client_sock, Buffer, buf, 0);
+        if (GetSize == SOCKET_ERROR) {
+            MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
+            exit(1);
+        }
+
+        Buffer[GetSize] = '\0'; // 마지막 버퍼 비워줌
+        player = (Player_Socket*)Buffer;
+        
+        Player[m_no];
+
+        /// <summary>
+        ///  Player[0]; Player[1];
+        /// Player[0] - Player[1]send ;
+        /// 
+        /// </summary>
+
+        Player[m_no].posX = player->posX;
+        Player[m_no].posY = player->posY;
+        Player[m_no].hp = player->hp;
+        Player[m_no].isAttack = player->isAttack;
+        Player[m_no].live = player->live;
+      
+
+
+        //int retval;
+        // 데이터 보내기( 구조체 크기를 먼저 보낸다. )
+
+        if (m_no == 0) {
+            send_Player(client_sock, Player[1]);
+        }
+        else {
+            send_Player(client_sock, Player[0]);
+        }
+        
+
+    }
 
     // closesocket()
     closesocket(client_sock);
-    printf("스레드 종료 : %d\n[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n\n", threadId,
+    printf("스레드 종료 : %d\n[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n\n", m_no,
         inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
     delete[] buf;
     return 0;
@@ -169,6 +261,53 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+void send_Player(SOCKET sock, Player_Socket player) {
+    int retval;
+
+    // 데이터 보내기( 구조체 크기를 먼저 보낸다. )
+    int buf = sizeof(player);
+    retval = send(sock, (char*)&buf, sizeof(int), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("send()");
+        exit(1);
+    }
+
+    // 데이터 보내기( 구조체 데이터를 보낸다. )
+    retval = send(sock, (char*)&player, sizeof(Player_Socket), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("send()");
+        exit(1);
+    }
+}
+
+/*
+Client_Player recv_Player(SOCKET sock) {
+    int retval;
+    int buf;
+    int GetSize;
+
+    retval = recvn(sock, (char*)&buf, sizeof(int), 0); // 데이터 받기(고정 길이)
+    if (retval == SOCKET_ERROR) {
+        err_display("recv()");
+    }
+    else if (retval == 0) {
+
+    }
+
+    char Buffer[BUFSIZE];
+    Client_Player* player;
+    GetSize = recv(sock, Buffer, buf, 0);
+    if (GetSize == SOCKET_ERROR) {
+        MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
+        exit(1);
+    }
+
+    Buffer[GetSize] = '\0'; // 마지막 버퍼 비워줌
+    player = (Client_Player*)Buffer;
+
+    return *player;
+}
+*/
 
 
 
