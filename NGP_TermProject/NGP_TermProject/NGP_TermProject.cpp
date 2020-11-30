@@ -4,6 +4,7 @@
 #include "NGP_TermProject.h"
 #include "Global.h"
 #include "winsock.h"
+#include "Player.h"
 #pragma comment(lib, "Msimg32.lib")
 
 

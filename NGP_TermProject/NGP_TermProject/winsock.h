@@ -23,7 +23,6 @@ typedef struct Player_Socket
 	bool live;
 }Player_Socket;
 
-
 //Server_Player server_Player;
 
 //서버관련
