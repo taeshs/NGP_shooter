@@ -10,11 +10,11 @@
 #include "Global.h"
 
 #define SERVERIP   "192.168.219.103"
-#define SERVERPORT 9000
+#define SERVERPORT 8200
 #define BUFSIZE    5000
 #define MAX_Client 2
 
-
+ 
 typedef struct Player_Socket
 {
 	int posX, posY;

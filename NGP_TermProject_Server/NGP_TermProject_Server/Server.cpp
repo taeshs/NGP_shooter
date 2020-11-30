@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define SERVERPORT 9000
+#define SERVERPORT 8200
 #define BUFSIZE    512000
 
 
