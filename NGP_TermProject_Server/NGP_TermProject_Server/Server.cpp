@@ -16,9 +16,9 @@ using namespace std;
 
 void send_Player(SOCKET, Player_Socket);
 
-void send_Bullet(SOCKET sock, Bullet* bullet);
+void send_Bullet(SOCKET sock, Bullet_Arr bullet);
 
-Bullet* recv_Bullet(SOCKET sock);
+Bullet_Arr recv_Bullet(SOCKET sock);
 
 DWORD WINAPI ProcessClient(LPVOID);
 //Client_Player recv_Player(SOCKET sock);
@@ -79,7 +79,8 @@ int no = 0;
 int val[10] = { 0, };   //
 
 Player_Socket Player[2];
-Bullet* Bullets[2];
+
+Bullet_Arr Bullets[2];
 
 char Buffer[2][BUFSIZE];
 
@@ -145,12 +146,13 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     
 
     while (1) {
-        printf("%d번 루프 시작\n", m_no);
+        //printf("%d번 루프 시작\n", m_no);
         int retval;
         int buf;
         int GetSize;
 
-        printf("0 : (%d, %d), 1 : (%d, %d) \n",Player[0].posX, Player[0].posY,  Player[1].posX, Player[1].posY);
+        //printf("0 : (%d, %d), 1 : (%d, %d) \n",Player[0].posX, Player[0].posY,  Player[1].posX, Player[1].posY);
+        
  
         retval = recvn(client_sock, (char*)&buf, sizeof(int), 0); // 데이터 받기(고정 길이)
         if (retval == SOCKET_ERROR) {
@@ -169,8 +171,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
         Buffer[m_no][GetSize] = '\0'; // 마지막 버퍼 비워줌
         player = (Player_Socket*)Buffer[m_no];
-        
-        Player[m_no];
+
 
         /// <summary>
         ///  Player[0]; Player[1];
@@ -195,6 +196,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         else {
             send_Player(client_sock, Player[0]);
         }
+
         Bullets[m_no] = recv_Bullet(client_sock);
 
         if (m_no == 0) {
@@ -203,8 +205,8 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         else {
             send_Bullet(client_sock, Bullets[0]);
         }
-        
-
+        //if(Bullets[m_no]->bPosX > 0)
+         //   printf("%d 번 총알 %f\n ", m_no, Bullets[m_no]->bPosX);
     }
 
     // closesocket()
@@ -294,31 +296,28 @@ void send_Player(SOCKET sock, Player_Socket player) {
     }
 }
 
-void send_Bullet(SOCKET sock, Bullet* bullet) {
+void send_Bullet(SOCKET sock, Bullet_Arr bullet) {
     int retval;
 
     // 데이터 보내기( 구조체 데이터를 보낸다. )
-    retval = send(sock, (char*)&bullet, sizeof(Bullet*), 0);
+    retval = send(sock, (char*)&bullet, sizeof(Bullet_Arr), 0);
     if (retval == SOCKET_ERROR) {
         err_display("send()");
         exit(1);
     }
-}char Buffer2[BUFSIZE];
+}
+//char Buffer2[BUFSIZE];
 
-Bullet* recv_Bullet(SOCKET sock) {
+Bullet_Arr recv_Bullet(SOCKET sock) {
     int retval;
     int GetSize;
-
     
-    Bullet* bullet;
-    GetSize = recv(sock, Buffer2, sizeof(Bullet*), 0);
+    Bullet_Arr bullet;
+    GetSize = recv(sock, (char*)&bullet, sizeof(Bullet_Arr), 0);
     if (GetSize == SOCKET_ERROR) {
         MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
         exit(1);
     }
-
-    Buffer2[GetSize] = '\0'; // 마지막 버퍼 비워줌
-    bullet = (Bullet*)Buffer2;
 
     return bullet;
 }

@@ -9,7 +9,7 @@
 #include "framework.h"
 #include "Global.h"
 
-#define SERVERIP   "192.168.60.113"
+#define SERVERIP   "192.168.219.103"
 #define SERVERPORT 9000
 #define BUFSIZE    5000
 #define MAX_Client 2
@@ -23,6 +23,7 @@ typedef struct Player_Socket
 	bool live;
 }Player_Socket;
 
+
 //Server_Player server_Player;
 
 //서버관련
@@ -32,8 +33,12 @@ SOCKET init_socket();
 void send_Player(SOCKET sock, Player_Socket player);
 Player_Socket recv_Player(SOCKET sock);
 
-//void send_Bullet(SOCKET sock, Bullet* bullet);
+struct Bullet_Arr {
+	Bullet arr[10];
+};
 
-//Bullet* recv_Bullet(SOCKET sock);
+void send_Bullet(SOCKET sock, Bullet_Arr bullet);
+
+Bullet_Arr recv_Bullet(SOCKET sock);
 
 //extern char IPaddres[MAX_PATH];

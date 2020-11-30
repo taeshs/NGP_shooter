@@ -39,6 +39,8 @@ HBITMAP DrawCharater(HWND, Player, HDC, HDC, HBITMAP);
 void Run(HWND);
 
 
+Bullet_Arr arr_to_struct(Bullet* arr);
+
 
 LARGE_INTEGER g_tSecond;   // 초당 클록수    ex) 360  (고정값)
 
@@ -52,7 +54,8 @@ int clientid,person;
 int person1 = 0;
 bool start = false;
 
-Bullet* Other_bullet;
+Bullet_Arr Other_Bullet;
+Bullet_Arr Player_Bullet;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
@@ -432,11 +435,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         , player.bullets[i].bPosX + player.bullets[i].bSize / 2, player.bullets[i].bPosY - player.bullets[i].bSize / 2);
             }
 
-            /*for (int i = 0; i < player.maxBulletCnt; i++) {
-                if (Other_bullet[i].alive)
-                    Rectangle(backDC, Other_bullet[i].bPosX - Other_bullet[i].bSize / 2, Other_bullet[i].bPosY + Other_bullet[i].bSize / 2
-                        , Other_bullet[i].bPosX + Other_bullet[i].bSize / 2, Other_bullet[i].bPosY - Other_bullet[i].bSize / 2);
-            }*/
+            for (int i = 0; i < player.maxBulletCnt; i++) {
+                if (Other_Bullet.arr[i].alive)
+                    Rectangle(backDC, Other_Bullet.arr[i].bPosX - Other_Bullet.arr[i].bSize / 2, Other_Bullet.arr[i].bPosY + Other_Bullet.arr[i].bSize / 2
+                        , Other_Bullet.arr[i].bPosX + Other_Bullet.arr[i].bSize / 2, Other_Bullet.arr[i].bPosY -Other_Bullet.arr[i].bSize / 2);
+            }
             
             // 임시 총알 
 
@@ -621,10 +624,11 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
         send_Player(sock, Player_socket);
 
-        Player_socket = recv_Player(sock);
-        
-        send_Bullet(sock, player.bullets);
-        Other_bullet = recv_Bullet(sock);
+        Other_socket = recv_Player(sock);
+
+
+        send_Bullet(sock, arr_to_struct(player.bullets));
+        Other_Bullet = recv_Bullet(sock);
 
 
         Other_Player.setPos(Other_socket.posX, Other_socket.posY);
@@ -649,4 +653,18 @@ DWORD WINAPI ClientMain(LPVOID arg)
 }
 
 
+Bullet_Arr arr_to_struct(Bullet* arr) {
+    Bullet_Arr str;
+    str.arr[0] = arr[0];
+    str.arr[1] = arr[1];
+    str.arr[2] = arr[2];
+    str.arr[3] = arr[3];
+    str.arr[4] = arr[4];
+    str.arr[5] = arr[5];
+    str.arr[6] = arr[6];
+    str.arr[7] = arr[7];
+    str.arr[8] = arr[8];
+    str.arr[9] = arr[9];
+    return str;
+}
 // 만약에 받은 플레이어 번호가 0번이면 1P -> 

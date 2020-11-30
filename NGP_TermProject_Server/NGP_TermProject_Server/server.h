@@ -47,3 +47,7 @@ struct Bullet {
         updateBB();
     }
 };
+
+struct Bullet_Arr {
+    Bullet arr[10];
+};
