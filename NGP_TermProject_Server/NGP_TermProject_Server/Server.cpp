@@ -208,6 +208,13 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         //if(Bullets[m_no]->bPosX > 0)
          //   printf("%d 번 총알 %f\n ", m_no, Bullets[m_no]->bPosX);
 
+        /* 충돌처리 */
+
+
+
+
+
+
         int gameState;
         if (Player[0].hp <= 0) {
             gameState = 1;

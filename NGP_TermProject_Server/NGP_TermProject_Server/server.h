@@ -51,3 +51,14 @@ struct Bullet {
 struct Bullet_Arr {
     Bullet arr[10];
 };
+
+
+
+///
+/// gamestate 傈价秦林扁
+/// 面倒贸府 秦林扁
+/// 
+/// 
+/// 
+/// 
+/// 
