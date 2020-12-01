@@ -36,7 +36,7 @@ struct Bullet {
     float bPosX = 0, bPosY = 0;
 
     int bPlayer = 0;
-    BoundingBox bb;
+    //BoundingBox bb;
 
     Bullet(int type, int size, int spd, int dmg) { bType = type; bSize = size; bSpeed = spd; bDamage = dmg; }
     Bullet() {}

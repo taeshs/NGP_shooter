@@ -545,6 +545,7 @@ void Run(HWND hWnd) {
     }*/ // 기존 키 조작
     
     // 키 1p 2p 분리 - 혼자 테스트 용
+    /**/
     if (clientid == 0) {
         if (GetAsyncKeyState(VK_RIGHT) < 0) {
             if (gameGround.right > player.getX())

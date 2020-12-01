@@ -213,9 +213,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
 
 
-
-
-        int gameState;
+        /*int gameState;
         if (Player[0].hp <= 0) {
             gameState = 1;
         }
@@ -227,7 +225,9 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         }
         else {
             gameState = 0;
-        }
+        }*/
+
+        
         // 게임 오버 체크 
     }
 
