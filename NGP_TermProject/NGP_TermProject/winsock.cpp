@@ -53,6 +53,9 @@ SOCKET init_socket() {
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == INVALID_SOCKET) err_quit("socket()");
 
+	//Nagle off
+	BOOL optval = TRUE;
+	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&optval, sizeof(optval));
 
 	// connect()
 	SOCKADDR_IN serveraddr;

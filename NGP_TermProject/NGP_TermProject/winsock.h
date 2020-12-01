@@ -9,7 +9,7 @@
 #include "framework.h"
 #include "Global.h"
 
-#define SERVERIP   "192.168.61.9"
+#define SERVERIP   "192.168.219.104"
 #define SERVERPORT 8200
 #define BUFSIZE    5000
 #define MAX_Client 2
