@@ -90,5 +90,14 @@
     <Image Include="loading.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="draw.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="win.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="loss.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
 </Project>

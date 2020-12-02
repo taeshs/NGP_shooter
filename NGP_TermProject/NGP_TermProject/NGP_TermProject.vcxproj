@@ -173,9 +173,12 @@
     <Image Include="Character.bmp" />
     <Image Include="character1.bmp" />
     <Image Include="character2.bmp" />
+    <Image Include="draw.bmp" />
     <Image Include="loading.bmp" />
+    <Image Include="loss.bmp" />
     <Image Include="NGP_TermProject.ico" />
     <Image Include="small.ico" />
+    <Image Include="win.bmp" />
     <Image Include="스킬1.bmp" />
     <Image Include="스킬2.bmp" />
     <Image Include="스킬3.bmp" />

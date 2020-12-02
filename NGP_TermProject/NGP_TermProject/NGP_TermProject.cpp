@@ -50,7 +50,7 @@ float		  g_fDeltaTime;
 
 int maxhp = 10;
 int minhp = 0;
-int clientid,person;
+int clientid,person,gameState;
 int person1 = 0;
 bool start = false;
 
@@ -202,7 +202,7 @@ static Player player(80.0f, 200.0f), Other_Player(550.0f, 200.0f);            //
 // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
 
 
-HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap,LodBitmap;
+HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap,LodBitmap, p1winBitmap, p2winBitmap, drawBitmap;
 RECT gameGround;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -224,6 +224,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         S2Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP5));
         S3Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP6));
         LodBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP7));
+        p1winBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP8));
+        p2winBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP9));
+        drawBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP10));
 
 
         //p1.setPos(60.0f, 200.0f);
@@ -310,7 +313,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         //if(person1 <= 1)
            
-        
+        if (gameState == 1) {
+            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, p1winBitmap);
+        }
+        else if (gameState == 2) {
+            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, p2winBitmap);
+        }
+        else if (gameState == 3) {
+            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, drawBitmap);
+        }
+
+            //계속진행
 
         if (clientid == 0 && start == false)
         {
@@ -672,9 +685,16 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
         Other_Player.setPos(Other_socket.posX, Other_socket.posY);
 
+
         //Other_Player = recv_Player(sock);          // 받은 정보로 otherplayer set.
 
         //p2.setPos(server_Player.Players->posX, server_Player.Players->posY);
+
+        retval = recv(sock, (char*)&gameState, sizeof(gameState), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+            closesocket(sock);
+        }
 
     }
     return 0;

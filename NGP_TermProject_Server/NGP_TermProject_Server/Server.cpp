@@ -8,7 +8,8 @@
 
 using namespace std;
 
-#define SERVERPORT 8200
+// #define SERVERPORT 8200 -> 8200 쓰면 bind오류떠서 일단 9000으로 바꿨다 ㅠ 
+#define SERVERPORT 9000
 #define BUFSIZE    512000
 
 
@@ -83,6 +84,7 @@ Player_Socket Player[2];
 Bullet_Arr Bullets[2];
 
 char Buffer[2][BUFSIZE];
+
 
 DWORD WINAPI ProcessClient(LPVOID arg) {
 
@@ -213,7 +215,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
 
 
-        /*int gameState;
+        int gameState;
         if (Player[0].hp <= 0) {
             gameState = 1;
         }
@@ -225,8 +227,14 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         }
         else {
             gameState = 0;
-        }*/
+        }
 
+        retval = send(client_sock, (char*)&gameState, sizeof(gameState), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("recv()");
+            closesocket(client_sock);
+        }
+        printf("-> game state : %d\n", gameState);
         
         // 게임 오버 체크 
     }
