@@ -17,8 +17,6 @@ public:
 	float getX() { return posX; }
 	float getY() { return posY; }
 
-
-
 	int getMp() { return mp; }
 
 	void addMp() { if (mp < maxMp) { mp++; } }
@@ -31,6 +29,12 @@ public:
 		if (val == 2)nowBullet = bullet2;
 		if (val == 3)nowBullet = bullet3;
 	}
+
+	void setPlayerNo(int no) { playerNo = no; }
+
+	void UpdateBB(int x, int y, int size) { bb.Update(x, y, x + size, y + size); }
+	RECT GetBBRect() { return bb.getBB(); }
+	BoundingBox GetBB() { return bb; }
 
 	Bullet bullet1 = {2, 10, 200, 10};	// size spd dmg
 	Bullet bullet2 = {3, 20, 200, 20};
@@ -58,5 +62,5 @@ private:
 	Bullet nowBullet = bullet1;
 
 
-	//BoundingBox bb;
+	BoundingBox bb;
 };

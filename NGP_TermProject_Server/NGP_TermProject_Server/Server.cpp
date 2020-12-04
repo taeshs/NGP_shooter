@@ -24,6 +24,9 @@ Bullet_Arr recv_Bullet(SOCKET sock);
 DWORD WINAPI ProcessClient(LPVOID);
 //Client_Player recv_Player(SOCKET sock);
 
+Bullet_Arr arr_to_struct(Bullet* arr);
+Bullet* struct_to_arr(Bullet_Arr str);
+
 // 소켓 함수 오류 출력 후 종료
 void err_quit(const char* msg)
 {
@@ -184,8 +187,8 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         Player[m_no].posX = player->posX;
         Player[m_no].posY = player->posY;
         Player[m_no].hp = player->hp;
-        Player[m_no].isAttack = player->isAttack;
         Player[m_no].live = player->live;
+        Player[m_no].bb = player->bb;
       
 
 
@@ -211,9 +214,12 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
          //   printf("%d 번 총알 %f\n ", m_no, Bullets[m_no]->bPosX);
 
         /* 충돌처리 */
+        for (int i = 0; i < 10; i++) {
+            // 충돌처리 이제 player[내꺼]랑  변환(bullet[상대꺼]) 이랑 충돌체크 해서 총알은 죽이고 플레이어는 피달게
+        }
 
 
-
+        /* 충돌처리 */
 
         int gameState;
         if (Player[0].hp <= 0) {
@@ -396,3 +402,63 @@ Client_Player recv_Player(SOCKET sock) {
 차후 충돌체크?
 
 */
+
+
+bool collisionCheck(BoundingBox a, BoundingBox b) {
+    if (a.getBB().bottom > b.getBB().top && b.getBB().top > a.getBB().top) {
+        if (a.getBB().right > b.getBB().left) {
+            //1)
+            return true;
+        }
+        else if (a.getBB().right < b.getBB().left) {
+            //4)
+            return true;
+        }
+        return false;
+    }
+    else if (b.getBB().bottom > a.getBB().top && b.getBB().top < a.getBB().top) {
+        if (a.getBB().right > b.getBB().left) {
+            //3)
+            return true;
+        }
+        else if (a.getBB().right < b.getBB().left) {
+            //2)
+            return true;
+        }
+        return false;
+    }
+    else {
+        return false;
+    }
+}
+
+Bullet_Arr arr_to_struct(Bullet* arr) {
+    Bullet_Arr str;
+    str.arr[0] = arr[0];
+    str.arr[1] = arr[1];
+    str.arr[2] = arr[2];
+    str.arr[3] = arr[3];
+    str.arr[4] = arr[4];
+    str.arr[5] = arr[5];
+    str.arr[6] = arr[6];
+    str.arr[7] = arr[7];
+    str.arr[8] = arr[8];
+    str.arr[9] = arr[9];
+    return str;
+}
+
+Bullet* struct_to_arr(Bullet_Arr str) {
+    Bullet arr[10];
+    arr[0] = str.arr[0];
+    arr[1] = str.arr[1];
+    arr[2] = str.arr[2];
+    arr[3] = str.arr[3];
+    arr[4] = str.arr[4];
+    arr[5] = str.arr[5];
+    arr[6] = str.arr[6];
+    arr[7] = str.arr[7];
+    arr[8] = str.arr[8];
+    arr[9] = str.arr[9];
+
+    return arr;
+}

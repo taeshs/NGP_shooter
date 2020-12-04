@@ -372,7 +372,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // left, top, right, bottom,
 
             DrawCharater(hWnd, player, memDC, backDC, player.bitmap); // PLAYER 1
+            //Rectangle(backDC, player.GetBBRect().left, player.GetBBRect().top, player.GetBBRect().right, player.GetBBRect().bottom); //boundingbox
+
             DrawCharater(hWnd, Other_Player, memDC, backDC, Other_Player.bitmap); // PLAYER 2
+            //Rectangle(backDC, Other_Player.GetBBRect().left, Other_Player.GetBBRect().top, Other_Player.GetBBRect().right, Other_Player.GetBBRect().bottom);//boundingbox
 
 
 
@@ -443,15 +446,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // mp Bar
 
             for (int i = 0; i < player.maxBulletCnt; i++) {
-                if (player.bullets[i].alive)
+                if (player.bullets[i].alive) {
                     Rectangle(backDC, player.bullets[i].bPosX - player.bullets[i].bSize / 2, player.bullets[i].bPosY + player.bullets[i].bSize / 2
                         , player.bullets[i].bPosX + player.bullets[i].bSize / 2, player.bullets[i].bPosY - player.bullets[i].bSize / 2);
+                    /*Rectangle(backDC, player.bullets[i].bb.getBB().left, player.bullets[i].bb.getBB().top,
+                        player.bullets[i].bb.getBB().right, player.bullets[i].bb.getBB().bottom);*/
+                }
             }
 
             for (int i = 0; i < player.maxBulletCnt; i++) {
-                if (Other_Bullet.arr[i].alive)
+                if (Other_Bullet.arr[i].alive) {
                     Rectangle(backDC, Other_Bullet.arr[i].bPosX - Other_Bullet.arr[i].bSize / 2, Other_Bullet.arr[i].bPosY + Other_Bullet.arr[i].bSize / 2
-                        , Other_Bullet.arr[i].bPosX + Other_Bullet.arr[i].bSize / 2, Other_Bullet.arr[i].bPosY -Other_Bullet.arr[i].bSize / 2);
+                        , Other_Bullet.arr[i].bPosX + Other_Bullet.arr[i].bSize / 2, Other_Bullet.arr[i].bPosY - Other_Bullet.arr[i].bSize / 2);
+                    /*Rectangle(backDC, Other_Bullet.arr[i].bb.getBB().left, Other_Bullet.arr[i].bb.getBB().top,
+                        Other_Bullet.arr[i].bb.getBB().right, Other_Bullet.arr[i].bb.getBB().bottom);*/
+                }
+
             }
             
             // 임시 총알 
@@ -596,6 +606,7 @@ void Run(HWND hWnd) {
         }
     }
 
+    player.UpdateBB(player.getX(),player.getY(),40);
 
     for (int i = 0; i < player.maxBulletCnt; i++) {
         if (player.bullets[i].alive)
@@ -644,6 +655,14 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     printf("-> 클라 아이디 (번호): %d\n", clientid);
     //PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
     // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
+    int playerNo = -1;
+    if (clientid == 0) {
+        playerNo = PLAYER_NUMBER_1;
+    }
+    else if (clientid == 1) {
+        playerNo = PLAYER_NUMBER_2;
+    }
+    player.setPlayerNo(playerNo);
 
     retval = recv(sock, (char*)&person, sizeof(person), 0);
     if (retval == SOCKET_ERROR) {
@@ -673,6 +692,8 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     while (1) {
         Player_socket.posX = player.getX();
         Player_socket.posY = player.getY();
+        Player_socket.bb = player.GetBB();
+        
 
         send_Player(sock, Player_socket);
 
@@ -684,7 +705,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
 
         Other_Player.setPos(Other_socket.posX, Other_socket.posY);
-
+        Other_Player.UpdateBB(Other_socket.posX, Other_socket.posY,40);
 
         //Other_Player = recv_Player(sock);          // 받은 정보로 otherplayer set.
 

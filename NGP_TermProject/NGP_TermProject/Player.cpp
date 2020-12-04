@@ -3,7 +3,7 @@
 
 Player::Player() {}
 
-Player::Player(float x, float y) { posX = x; posY = y; maxMp = 10; mp = 0; maxHp = 10; hp = maxHp; }
+Player::Player(float x, float y) { posX = x; posY = y; maxMp = 10; mp = 0; maxHp = 10; hp = maxHp; bb.SetBB(posX,posY,posX+40,posY+40,TYPE_PLAYER, playerNo); }
 
 Player::~Player() {}
 

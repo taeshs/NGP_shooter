@@ -19,8 +19,8 @@ typedef struct Player_Socket
 {
 	int posX, posY;
 	int hp;
-	bool isAttack;
 	bool live;
+	BoundingBox bb;
 }Player_Socket;
 
 
