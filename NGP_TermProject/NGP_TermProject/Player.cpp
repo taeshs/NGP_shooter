@@ -44,3 +44,12 @@ void Player::subMp(int val) {
 	if(mp > 0)
 		mp -= val;
 }
+
+void Player::subHp() {
+	if (hp > 0)
+		hp -= 1;
+}
+
+void Player::setHp(int p_hp) {
+	hp = p_hp;
+}

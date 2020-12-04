@@ -13,14 +13,17 @@ public:
 	bool shoot(int stX, int stY, int dstX, int dstY, float deltaTime);
 
 	void setPos(float x, float y);
+	void setHp(int hp);
 
 	float getX() { return posX; }
 	float getY() { return posY; }
 
+	int getHp() { return hp; }
 	int getMp() { return mp; }
 
 	void addMp() { if (mp < maxMp) { mp++; } }
 	void subMp(int val);
+	void subHp();
 
 	int getBulletCost() { return nowBullet.bType; }
 
