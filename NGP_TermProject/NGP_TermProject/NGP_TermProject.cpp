@@ -50,6 +50,7 @@ float		  g_fDeltaTime;
 
 int maxhp = 10;
 int minhp = 0;
+int minhp2 = 0;
 int clientid,person,gameState;
 int person1 = 0;
 bool start = false;
@@ -399,8 +400,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
 
             //if (공격받을때) 
+            //player.subHp();
 
-            minhp = (((bufferRT.right - 150) / 2) / 10) * player.maxHp;
+            minhp = ((bufferRT.right - 150) / 2) / 10 * player.getHp();
+            minhp2 = (bufferRT.right - 200) / 10 * (Other_Player.maxHp - Other_Player.getHp());
 
             //Rectangle(backDC, 50, 30, ((bufferRT.right - 100)/2)- minhp, 50);
 
@@ -414,7 +417,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             myBrush = CreateSolidBrush(RGB(0, 0, 255));
             oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
 
-            Rectangle(backDC, ((bufferRT.right - 100) / 2), 30, bufferRT.right - 150, 50);// -150 + 50
+            Rectangle(backDC, ((bufferRT.right - 100) / 2)+minhp2, 30, bufferRT.right - 150, 50);// -150 + 50
 
             SelectObject(backDC, oldPen);
             DeleteObject(myPen);
@@ -673,6 +676,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     while (1) {
         Player_socket.posX = player.getX();
         Player_socket.posY = player.getY();
+        Player_socket.hp = player.getHp();
 
         send_Player(sock, Player_socket);
 
@@ -684,6 +688,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
 
         Other_Player.setPos(Other_socket.posX, Other_socket.posY);
+        Other_Player.setHp(Other_socket.hp);
 
 
         //Other_Player = recv_Player(sock);          // 받은 정보로 otherplayer set.
