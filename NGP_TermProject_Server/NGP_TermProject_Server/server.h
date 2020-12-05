@@ -5,18 +5,11 @@
 #define TYPE_BULLET 10000
 #define TYPE_PLAYER 10001
 
+
 struct vector2D {
     float x, y;
 };
-bool collisionCheck(BoundingBox a, BoundingBox b);
 
-typedef struct Player_Socket {
-	// 전송을 위해 사용
-	int posX=0, posY=0;
-	int hp;
-	bool live;
-    BoundingBox bb;
-}Player_Socket;
 
 class BoundingBox {
 public:
@@ -33,6 +26,15 @@ private:
     int type;
     int bPlayer;
 };
+bool collisionCheck(BoundingBox a, BoundingBox b);
+
+typedef struct Player_Socket {
+    // 전송을 위해 사용
+    int posX = 0, posY = 0;
+    int hp;
+    bool live;
+    BoundingBox bb;
+}Player_Socket;
 
 struct Bullet {
     vector2D shootDir;

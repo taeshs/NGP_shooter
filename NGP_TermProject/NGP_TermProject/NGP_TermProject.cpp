@@ -49,8 +49,8 @@ LARGE_INTEGER g_tTime;      // 이전 클록수
 float		  g_fDeltaTime;
 
 int maxhp = 10;
-int minhp = 0;
-int minhp2 = 0;
+float minhp = 0;
+float minhp2 = 0;
 int clientid,person,gameState;
 int person1 = 0;
 bool start = false;
@@ -260,14 +260,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
         case 0x31:
             player.setBullet(1);
+            player.setHp(1);    ////////////////////////////////////////////////
             break;
 
         case 0x32:
             player.setBullet(2);
+            player.setHp(5);    ////////////////////////////////////////////////
             break;
 
         case 0x33:
             player.setBullet(3);
+            player.setHp(10);    ////////////////////////////////////////////////
             break;
         }
 
@@ -378,7 +381,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             DrawCharater(hWnd, Other_Player, memDC, backDC, Other_Player.bitmap); // PLAYER 2
             //Rectangle(backDC, Other_Player.GetBBRect().left, Other_Player.GetBBRect().top, Other_Player.GetBBRect().right, Other_Player.GetBBRect().bottom);//boundingbox
 
-
+            Rectangle(backDC, 50, 30, ((bufferRT.right - 100) / 2), 50);
+            Rectangle(backDC, ((bufferRT.right - 100) / 2), 30, (bufferRT.right - 100) - 50, 50);
 
 
            /*
@@ -405,13 +409,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             //if (공격받을때) 
             //player.subHp();
 
-            minhp = ((bufferRT.right - 150) / 2) / 10 * player.getHp();
-            minhp2 = (bufferRT.right - 200) / 10 * (Other_Player.maxHp - Other_Player.getHp());
+            float hpBlock = (((bufferRT.right - 200) / 2)) / 10;
 
-            //Rectangle(backDC, 50, 30, ((bufferRT.right - 100)/2)- minhp, 50);
-
-            Rectangle(backDC, 50, 30, minhp + 50, 50);
-
+            Rectangle(backDC, 50, 30, 50 + (hpBlock * player.getHp()), 50);
+            
             SelectObject(backDC, oldPen);
             DeleteObject(myPen);
             SelectObject(backDC, oldBrush);
@@ -420,15 +421,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             myBrush = CreateSolidBrush(RGB(0, 0, 255));
             oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
 
-            Rectangle(backDC, ((bufferRT.right - 100) / 2)+minhp2, 30, bufferRT.right - 150, 50);// -150 + 50
+            Rectangle(backDC, ((bufferRT.right - 100) / 2), 30, ((bufferRT.right - 100) / 2) + (hpBlock * Other_Player.getHp()), 50);
 
             SelectObject(backDC, oldPen);
             DeleteObject(myPen);
             SelectObject(backDC, oldBrush);
             DeleteObject(myBrush);
 
-            // hp bar right를 hp비율로 나눔
-
+            ///hp bar
+            //////////
 
             //Rectangle(backDC, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 100);// 440);// 
             // skill bar
@@ -713,6 +714,8 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         Other_Player.UpdateBB(Other_socket.posX, Other_socket.posY,40);
 
         Other_Player.setHp(Other_socket.hp);
+
+        //player.setHp(5);
 
 
         //Other_Player = recv_Player(sock);          // 받은 정보로 otherplayer set.
