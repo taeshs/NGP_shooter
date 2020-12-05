@@ -90,6 +90,8 @@ Player_Socket Player[2];
 
 Bullet_Arr Bullets[2];
 
+Bullet_Alive_Arr aArr[2];
+
 char Buffer[2][BUFSIZE];
 
 
@@ -186,47 +188,50 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         Player[m_no].hp = player->hp;
         Player[m_no].bb = player->bb;
       
-        printf("0 : (%d, %d), hp : (%d) \n", Player[0].posX, Player[0].posY, Player[0].hp);
+        //printf("0 : (%d, %d), hp : (%d) \n", Player[0].posX, Player[0].posY, Player[0].hp);
 
-        printf("1 : (%d, %d), hp : (%d) \n", Player[1].posX, Player[1].posY, Player[1].hp);
+        //printf("1 : (%d, %d), hp : (%d) \n", Player[1].posX, Player[1].posY, Player[1].hp);
 
         //int retval;
         // 데이터 보내기( 구조체 크기를 먼저 보낸다. )
 
 
-        send_Player(client_sock, Player[enemy_no]);
-
-        //send hp
 
         Bullets[m_no] = recv_Bullet(client_sock);
-
-        Bullet_Alive_Arr aArr;
+        
         for (int i = 0; i < 10; i++) {
-            aArr.arr[i] = Bullets[m_no].arr[i].alive;
+            aArr[enemy_no].arr[i] = 0;
         }
 
-
-        send_Bullet(client_sock, Bullets[enemy_no]);
-
-        send_Bullet_Alive(client_sock, aArr);
-
-        //if(Bullets[m_no]->bPosX > 0)
-         //   printf("%d 번 총알 %f\n ", m_no, Bullets[m_no]->bPosX);
-
-        /* 충돌처리 */
-        Bullet_Arr str;
-        str = m_no == 0 ? Bullets[1] : Bullets[0];
-
+        int asd;
         for (int i = 0; i < 10; i++) {
-            if (str.arr[i].alive) {
-                if (collisionCheck(Player[m_no].bb, str.arr[i].GetBB())) {
-                    str.arr[i].alive = false;
+            if (Bullets[enemy_no].arr[i].alive) {
+                if (collisionCheck(Player[m_no].bb, Bullets[enemy_no].arr[i].GetBB())) {
+                    Bullets[enemy_no].arr[i].alive = false;     // 방식 바꿔야함.
+                    aArr[enemy_no].arr[i] = 1;
                     //Player[m_no].hp -= str.arr[i].bDamage;
                 }
             }
             // 충돌처리 이제 player[내꺼]랑  변환(bullet[상대꺼]) 이랑 충돌체크 해서 총알은 죽이고 플레이어는 피달게
         }
-        m_no == 0 ? Bullets[1] = str : Bullets[0] = str;
+
+        send_Player(client_sock, Player[enemy_no]);
+        send_Bullet(client_sock, Bullets[enemy_no]);
+
+        send_Player(client_sock, Player[m_no]);
+        //send_Bullet(client_sock, Bullets[m_no]);
+
+        send_Bullet_Alive(client_sock, aArr[enemy_no]);
+        send_Bullet_Alive(client_sock, aArr[m_no]);
+
+        //if(Bullets[m_no]->bPosX > 0)
+         //   printf("%d 번 총알 %f\n ", m_no, Bullets[m_no]->bPosX);
+
+        /* 충돌처리 */
+
+        //str = m_no == 0 ? Bullets[1] : Bullets[0];
+
+        
 
         /* 충돌처리 */
 
@@ -436,7 +441,7 @@ bool collisionCheck(BoundingBox a, BoundingBox b) {
     if (a.getBB().right < b.getBB().left) return false;
     if (b.getBB().bottom < a.getBB().top) return false;
     if (a.getBB().bottom < b.getBB().top) return false;
-    printf("collide!\n");
+    //printf("collide!\n");
     return true;
 }
 

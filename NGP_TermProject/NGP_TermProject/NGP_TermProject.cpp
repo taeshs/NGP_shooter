@@ -203,7 +203,7 @@ static Player player(80.0f, 200.0f), Other_Player(550.0f, 200.0f);            //
 // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
 
 
-HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap,LodBitmap, p1winBitmap, p2winBitmap, drawBitmap;
+HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap,LodBitmap, winBitmap, drawBitmap, loseBitmap;
 RECT gameGround;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -225,9 +225,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         S2Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP5));
         S3Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP6));
         LodBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP7));
-        p1winBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP8));
-        p2winBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP9));
-        drawBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP10));
+        drawBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP8));
+        winBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP9));
+        loseBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP10));
 
 
         //p1.setPos(60.0f, 200.0f);
@@ -260,17 +260,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
         case 0x31:
             player.setBullet(1);
-            player.setHp(1);    ////////////////////////////////////////////////
+            //player.setHp(1);    ////////////////////////////////////////////////
             break;
 
         case 0x32:
             player.setBullet(2);
-            player.setHp(5);    ////////////////////////////////////////////////
+            //player.setHp(5);    ////////////////////////////////////////////////
             break;
 
         case 0x33:
             player.setBullet(3);
-            player.setHp(10);    ////////////////////////////////////////////////
+            //player.setHp(10);    ////////////////////////////////////////////////
             break;
         }
 
@@ -358,10 +358,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         FillRect(backDC, &bufferRT, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
         if (gameState == 1) {
-            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, p1winBitmap);
+            if(clientid == 0)
+                DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, loseBitmap);
+            else
+                DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, winBitmap);
         }
         else if (gameState == 2) {
-            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, p2winBitmap);
+            if (clientid == 0)
+                DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, winBitmap);
+            else
+                DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, loseBitmap);
         }
         else if (gameState == 3) {
             DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, drawBitmap);
@@ -707,6 +713,11 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
         send_Player(sock, Player_socket);
 
+        
+
+        send_Bullet(sock, arr_to_struct(player.bullets));
+
+
         Other_socket = recv_Player(sock);
 
 
@@ -714,17 +725,35 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         Other_Player.setHp(Other_socket.hp);
         Other_Player.UpdateBB(Other_socket.posX, Other_socket.posY, 40);
 
-        //player.setHp(Player_socket.hp);
-
-        send_Bullet(sock, arr_to_struct(player.bullets));
         Other_Bullet = recv_Bullet(sock);
-        
-        Bullet_Alive_Arr aArr;
-        aArr = recv_Bullet_Alive(sock);
 
-        /*for (int i = 0; i < 10; i++) {
-            player.bullets[i].alive = aArr.arr[i];
-        }*/
+
+        Player_socket = recv_Player(sock);
+        //Player_Bullet = recv_Bullet(sock);
+
+
+
+        //player.setHp(Player_socket.hp);
+        
+        Bullet_Alive_Arr en_aArr, pl_aArr;
+        en_aArr = recv_Bullet_Alive(sock);
+        pl_aArr = recv_Bullet_Alive(sock);
+
+        for (int i = 0; i < 10; i++) {
+            if (en_aArr.arr[i] == 1) {
+                Other_Bullet.arr[i].alive = false;
+                
+                player.subHp(Other_Bullet.arr[i].bDamage);
+                en_aArr.arr[i] = 0;
+            }
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (pl_aArr.arr[i] == 1) {
+                player.bullets[i].alive = false;
+                pl_aArr.arr[i] = 0;
+            }
+        }
        
         
         
@@ -772,6 +801,17 @@ Bullet_Arr arr_to_struct(Bullet* arr) {
     str.arr[7] = arr[7];
     str.arr[8] = arr[8];
     str.arr[9] = arr[9];
+
+    str.arr[0].alive = arr[0].alive;
+    str.arr[1].alive = arr[1].alive;
+    str.arr[2].alive = arr[2].alive;
+    str.arr[3].alive = arr[3].alive;
+    str.arr[4].alive = arr[4].alive;
+    str.arr[5].alive = arr[5].alive;
+    str.arr[6].alive = arr[6].alive;
+    str.arr[7].alive = arr[7].alive;
+    str.arr[8].alive = arr[8].alive;
+    str.arr[9].alive = arr[9].alive;
     return str;
 }
 // 만약에 받은 플레이어 번호가 0번이면 1P -> 

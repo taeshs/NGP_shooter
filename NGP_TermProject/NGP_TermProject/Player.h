@@ -23,7 +23,7 @@ public:
 
 	void addMp() { if (mp < maxMp) { mp++; } }
 	void subMp(int val);
-	void subHp();
+	void subHp(int val);
 
 	int getBulletCost() { return nowBullet.bType; }
 

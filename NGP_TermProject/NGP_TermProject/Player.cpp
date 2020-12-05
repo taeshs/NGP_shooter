@@ -45,7 +45,7 @@ void Player::subMp(int val) {
 		mp -= val;
 }
 
-void Player::subHp() {
+void Player::subHp(int val) {
 	if (hp > 0)
 		hp -= 1;
 }
