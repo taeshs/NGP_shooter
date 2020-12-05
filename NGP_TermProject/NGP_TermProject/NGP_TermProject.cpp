@@ -203,7 +203,7 @@ static Player player(80.0f, 200.0f), Other_Player(550.0f, 200.0f);            //
 // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
 
 
-HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap,LodBitmap, winBitmap, drawBitmap, loseBitmap;
+HBITMAP BGBitmap, P1Bitmap, P2Bitmap, S1Bitmap, S2Bitmap, S3Bitmap,LodBitmap, winBitmap, drawBitmap, loseBitmap, info1Bitmap, info2Bitmap;
 RECT gameGround;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -227,7 +227,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         LodBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP7));
         drawBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP8));
         winBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP9));
-        loseBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP10));
+        loseBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP10));//1122
+        info1Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP11));
+        info2Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP12));
 
 
         //p1.setPos(60.0f, 200.0f);
@@ -379,6 +381,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         if(person == 2 && gameState == 0)
         {
             DrawBackground(hWnd, gameGround.left, gameGround.top, gameGround.right, gameGround.bottom, memDC, backDC, BGBitmap);
+            if (clientid == 0) {
+                SelectObject(memDC, info1Bitmap);
+                
+            }
+            else {
+                SelectObject(memDC, info2Bitmap);
+            }
+            StretchBlt(backDC, 0, 0, 20, 30, memDC, 0, 0, 62, 118, SRCCOPY);
 
             DrawSkill(hWnd, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 360, memDC, backDC, S1Bitmap);
             DrawSkill(hWnd, bufferRT.right - 150, bufferRT.bottom - 360, bufferRT.right - 50, bufferRT.bottom - 230, memDC, backDC, S2Bitmap);

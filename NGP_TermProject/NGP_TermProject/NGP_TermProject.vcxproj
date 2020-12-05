@@ -167,6 +167,8 @@
     <ResourceCompile Include="NGP_TermProject.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="1p.bmp" />
+    <Image Include="2p.bmp" />
     <Image Include="Background.bmp" />
     <Image Include="bitmap2.bmp" />
     <Image Include="bitmap3.bmp" />
