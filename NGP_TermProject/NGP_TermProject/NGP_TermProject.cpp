@@ -327,6 +327,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             Other_Player.setPos(550.0f, 200.0f);
             player.bitmap = P1Bitmap;
             Other_Player.bitmap = P2Bitmap;
+            player.setHp(10);
+            Other_Player.setHp(10);
 
             start = true;
         }
@@ -336,6 +338,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             Other_Player.setPos(80.0f, 200.0f);
             player.bitmap = P2Bitmap;
             Other_Player.bitmap = P1Bitmap;
+            player.setHp(10);
+            Other_Player.setHp(10);
 
             start = true;
         }
@@ -652,7 +656,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     int retval;
     int len;
 
-    retval = recv(sock, (char*)&clientid, sizeof(clientid), 0);
+    retval = recvn(sock, (char*)&clientid, sizeof(clientid), 0);
     if (retval == SOCKET_ERROR) {
         err_display("recv()");
         closesocket(sock);
@@ -669,14 +673,14 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     }
     player.setPlayerNo(playerNo);
 
-    retval = recv(sock, (char*)&person, sizeof(person), 0);
+    retval = recvn(sock, (char*)&person, sizeof(person), 0);
     if (retval == SOCKET_ERROR) {
         err_display("recv()");
         closesocket(sock);
     }
     printf("-> 클라 아이디 (번호): %d\n", person);
     while (person < 2) {
-        retval = recv(sock, (char*)&person, sizeof(person), 0);
+        retval = recvn(sock, (char*)&person, sizeof(person), 0);
         if (retval == SOCKET_ERROR) {
             err_display("recv()");
             closesocket(sock);
@@ -697,24 +701,35 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     while (1) {
         Player_socket.posX = player.getX();
         Player_socket.posY = player.getY();
-
-        Player_socket.bb = player.GetBB();
         Player_socket.hp = player.getHp();
+        Player_socket.bb = player.GetBB();
+        
 
         send_Player(sock, Player_socket);
 
         Other_socket = recv_Player(sock);
 
 
+        Other_Player.setPos(Other_socket.posX, Other_socket.posY);
+        Other_Player.setHp(Other_socket.hp);
+        Other_Player.UpdateBB(Other_socket.posX, Other_socket.posY, 40);
+
+        //player.setHp(Player_socket.hp);
+
         send_Bullet(sock, arr_to_struct(player.bullets));
         Other_Bullet = recv_Bullet(sock);
+        
+        Bullet_Alive_Arr aArr;
+        aArr = recv_Bullet_Alive(sock);
 
+        for (int i = 0; i < 10; i++) {
+            player.bullets[i].alive = aArr.arr[i];
+        }
+       
+        
+        
 
-        Other_Player.setPos(Other_socket.posX, Other_socket.posY);
-
-        Other_Player.UpdateBB(Other_socket.posX, Other_socket.posY,40);
-
-        Other_Player.setHp(Other_socket.hp);
+        
 
         //player.setHp(5);
 
@@ -723,7 +738,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
         //p2.setPos(server_Player.Players->posX, server_Player.Players->posY);
 
-        retval = recv(sock, (char*)&gameState, sizeof(gameState), 0);
+        retval = recvn(sock, (char*)&gameState, sizeof(gameState), 0);
         if (retval == SOCKET_ERROR) {
             err_display("recv()");
             closesocket(sock);

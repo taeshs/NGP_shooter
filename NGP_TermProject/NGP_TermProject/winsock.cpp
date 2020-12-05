@@ -76,12 +76,6 @@ void send_Player(SOCKET sock, Player_Socket player) {
 	int retval;
 
 	// 데이터 보내기( 구조체 크기를 먼저 보낸다. )
-	int buf = sizeof(player);
-	retval = send(sock, (char*)&buf, sizeof(int), 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("send()");
-		exit(1);
-	}
 
 	// 데이터 보내기( 구조체 데이터를 보낸다. )
 	retval = send(sock, (char*)&player, sizeof(Player_Socket), 0);
@@ -97,19 +91,11 @@ Player_Socket recv_Player(SOCKET sock) {
 	int buf;
 	int GetSize;
 
-	retval = recvn(sock, (char*)&buf, sizeof(int), 0); // 데이터 받기(고정 길이)
-	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
-	}
-	else if (retval == 0) {
-		
-	}
-
-
 	Player_Socket* player;
-	GetSize = recv(sock, Buffer, buf, 0);
+	GetSize = recv(sock, Buffer, sizeof(Player_Socket), 0);
 	if (GetSize == SOCKET_ERROR) {
-		MessageBox(NULL,"error", "연결이 끊어졌습니다", 0);
+		err_quit("RECV()");
+		//MessageBox(NULL,"error", "연결이ㅁㅁ 끊어졌습니다", 0);
 		exit(1);
 	}
 
@@ -118,37 +104,6 @@ Player_Socket recv_Player(SOCKET sock) {
 
 	return *player;
 }
-
-
-
-/*void send_Bullet(SOCKET sock, Bullet* bullet) {
-	int retval;
-
-	// 데이터 보내기( 구조체 데이터를 보낸다. )
-	retval = send(sock, (char*)&bullet, sizeof(Bullet*), 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("send()");
-		exit(1);
-	}
-}
-
-Bullet* recv_Bullet(SOCKET sock) {
-	int retval;
-	int GetSize;
-
-	char Buffer[BUFSIZE];
-	Bullet* bullet;
-	GetSize = recv(sock, Buffer, sizeof(Bullet*), 0);
-	if (GetSize == SOCKET_ERROR) {
-		MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
-		exit(1);
-	}
-
-	Buffer[GetSize] = '\0'; // 마지막 버퍼 비워줌
-	bullet = (Bullet*)Buffer;
-
-	return bullet;
-}*/
 
 
 void send_Bullet(SOCKET sock, Bullet_Arr bullet) {
@@ -178,5 +133,27 @@ Bullet_Arr recv_Bullet(SOCKET sock) {
 }
 
 
+void send_Bullet_Alive(SOCKET sock, Bullet_Alive_Arr bullet_al) {
+	int retval;
 
+	retval = send(sock, (char*)&bullet_al, sizeof(Bullet_Alive_Arr), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+		exit(1);
+	}
+}
+
+Bullet_Alive_Arr recv_Bullet_Alive(SOCKET sock) {
+	int retval;
+	int GetSize;
+
+	Bullet_Alive_Arr bullet_ar;
+	GetSize = recv(sock, (char*)&bullet_ar, sizeof(Bullet_Alive_Arr), 0);
+	if (GetSize == SOCKET_ERROR) {
+		MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
+		exit(1);
+	}
+
+	return bullet_ar;
+}
 

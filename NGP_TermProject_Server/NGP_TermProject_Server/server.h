@@ -28,13 +28,14 @@ private:
 };
 bool collisionCheck(BoundingBox a, BoundingBox b);
 
-typedef struct Player_Socket {
-    // 전송을 위해 사용
-    int posX = 0, posY = 0;
+#pragma pack(push, 1)
+typedef struct Player_Socket
+{
+    int posX, posY;
     int hp;
-    bool live;
     BoundingBox bb;
 }Player_Socket;
+#pragma pack(pop)
 
 struct Bullet {
     vector2D shootDir;
@@ -80,6 +81,9 @@ struct Bullet_Arr {
     Bullet arr[10];
 };
 
+struct Bullet_Alive_Arr {
+    int arr[10];
+};
 
 
 ///

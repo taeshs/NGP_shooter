@@ -21,6 +21,10 @@ void send_Bullet(SOCKET sock, Bullet_Arr bullet);
 
 Bullet_Arr recv_Bullet(SOCKET sock);
 
+void send_Bullet_Alive(SOCKET sock, Bullet_Alive_Arr bullet);
+
+Bullet_Alive_Arr recv_Bullet_Alive(SOCKET sock);
+
 DWORD WINAPI ProcessClient(LPVOID);
 //Client_Player recv_Player(SOCKET sock);
 
@@ -94,6 +98,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     char* buf = new char[BUFSIZE + 1];
 
     int m_no=no++;
+    int enemy_no = m_no == 0 ? 1 : 0;
     //int threadId = GetCurrentThreadId();
     //printf("스레드 생성 : %d\n", threadId);
 
@@ -156,19 +161,11 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         int buf;
         int GetSize;
 
-        //printf("0 : (%d, %d), 1 : (%d, %d) \n",Player[0].posX, Player[0].posY,  Player[1].posX, Player[1].posY);
         
- 
-        retval = recvn(client_sock, (char*)&buf, sizeof(int), 0); // 데이터 받기(고정 길이)
-        if (retval == SOCKET_ERROR) {
-            err_display("recv()");
-        }
-        else if (retval == 0) {
-
-        } 
+        
         
         Player_Socket* player;
-        GetSize = recv(client_sock, Buffer[m_no], buf, 0);
+        GetSize = recv(client_sock, Buffer[m_no], sizeof(Player_Socket), 0);
         if (GetSize == SOCKET_ERROR) {
             MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
             exit(1);
@@ -187,37 +184,49 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         Player[m_no].posX = player->posX;
         Player[m_no].posY = player->posY;
         Player[m_no].hp = player->hp;
-        Player[m_no].live = player->live;
         Player[m_no].bb = player->bb;
       
+        printf("0 : (%d, %d), hp : (%d) \n", Player[0].posX, Player[0].posY, Player[0].hp);
 
+        printf("1 : (%d, %d), hp : (%d) \n", Player[1].posX, Player[1].posY, Player[1].hp);
 
         //int retval;
         // 데이터 보내기( 구조체 크기를 먼저 보낸다. )
 
-        if (m_no == 0) {
-            send_Player(client_sock, Player[1]);
-        }
-        else {
-            send_Player(client_sock, Player[0]);
-        }
+
+        send_Player(client_sock, Player[enemy_no]);
+
+        //send hp
 
         Bullets[m_no] = recv_Bullet(client_sock);
 
-        if (m_no == 0) {
-            send_Bullet(client_sock, Bullets[1]);
+        Bullet_Alive_Arr aArr;
+        for (int i = 0; i < 10; i++) {
+            aArr.arr[i] = Bullets[m_no].arr[i].alive;
         }
-        else {
-            send_Bullet(client_sock, Bullets[0]);
-        }
+
+
+        send_Bullet(client_sock, Bullets[enemy_no]);
+
+        send_Bullet_Alive(client_sock, aArr);
+
         //if(Bullets[m_no]->bPosX > 0)
          //   printf("%d 번 총알 %f\n ", m_no, Bullets[m_no]->bPosX);
 
         /* 충돌처리 */
+        Bullet_Arr str;
+        str = m_no == 0 ? Bullets[1] : Bullets[0];
+
         for (int i = 0; i < 10; i++) {
+            if (str.arr[i].alive) {
+                if (collisionCheck(Player[m_no].bb, str.arr[i].GetBB())) {
+                    str.arr[i].alive = false;
+                    //Player[m_no].hp -= str.arr[i].bDamage;
+                }
+            }
             // 충돌처리 이제 player[내꺼]랑  변환(bullet[상대꺼]) 이랑 충돌체크 해서 총알은 죽이고 플레이어는 피달게
         }
-
+        m_no == 0 ? Bullets[1] = str : Bullets[0] = str;
 
         /* 충돌처리 */
 
@@ -240,7 +249,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
             err_display("recv()");
             closesocket(client_sock);
         }
-        printf("-> game state : %d\n", gameState);
+        //printf("-> game state : %d\n", gameState);
         
         // 게임 오버 체크 
     }
@@ -320,13 +329,6 @@ int main(int argc, char* argv[])
 void send_Player(SOCKET sock, Player_Socket player) {
     int retval;
 
-    // 데이터 보내기( 구조체 크기를 먼저 보낸다. )
-    int buf = sizeof(player);
-    retval = send(sock, (char*)&buf, sizeof(int), 0);
-    if (retval == SOCKET_ERROR) {
-        err_display("send()");
-        exit(1);
-    }
 
     // 데이터 보내기( 구조체 데이터를 보낸다. )
     retval = send(sock, (char*)&player, sizeof(Player_Socket), 0);
@@ -362,6 +364,31 @@ Bullet_Arr recv_Bullet(SOCKET sock) {
     return bullet;
 }
 
+void send_Bullet_Alive(SOCKET sock, Bullet_Alive_Arr bullet_al) {
+    int retval;
+
+    // 데이터 보내기( 구조체 데이터를 보낸다. )
+    retval = send(sock, (char*)&bullet_al, sizeof(Bullet_Alive_Arr), 0);
+    if (retval == SOCKET_ERROR) {
+        err_display("send()");
+        exit(1);
+    }
+}
+//char Buffer2[BUFSIZE];
+
+Bullet_Alive_Arr recv_Bullet_Alive(SOCKET sock) {
+    int retval;
+    int GetSize;
+    
+    Bullet_Alive_Arr bullet_ar;
+    GetSize = recv(sock, (char*)&bullet_ar, sizeof(Bullet_Alive_Arr), 0);
+    if (GetSize == SOCKET_ERROR) {
+        MessageBox(NULL, "error", "연결이 끊어졌습니다", 0);
+        exit(1);
+    }
+
+    return bullet_ar;
+}
 
 /*
 Client_Player recv_Player(SOCKET sock) {
@@ -405,31 +432,12 @@ Client_Player recv_Player(SOCKET sock) {
 
 
 bool collisionCheck(BoundingBox a, BoundingBox b) {
-    if (a.getBB().bottom > b.getBB().top && b.getBB().top > a.getBB().top) {
-        if (a.getBB().right > b.getBB().left) {
-            //1)
-            return true;
-        }
-        else if (a.getBB().right < b.getBB().left) {
-            //4)
-            return true;
-        }
-        return false;
-    }
-    else if (b.getBB().bottom > a.getBB().top && b.getBB().top < a.getBB().top) {
-        if (a.getBB().right > b.getBB().left) {
-            //3)
-            return true;
-        }
-        else if (a.getBB().right < b.getBB().left) {
-            //2)
-            return true;
-        }
-        return false;
-    }
-    else {
-        return false;
-    }
+    if (a.getBB().left > b.getBB().right) return false;
+    if (a.getBB().right < b.getBB().left) return false;
+    if (b.getBB().bottom < a.getBB().top) return false;
+    if (a.getBB().bottom < b.getBB().top) return false;
+    printf("collide!\n");
+    return true;
 }
 
 Bullet_Arr arr_to_struct(Bullet* arr) {
