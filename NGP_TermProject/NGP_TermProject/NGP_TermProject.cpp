@@ -722,9 +722,9 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         Bullet_Alive_Arr aArr;
         aArr = recv_Bullet_Alive(sock);
 
-        for (int i = 0; i < 10; i++) {
+        /*for (int i = 0; i < 10; i++) {
             player.bullets[i].alive = aArr.arr[i];
-        }
+        }*/
        
         
         
