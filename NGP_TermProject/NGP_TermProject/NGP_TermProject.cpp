@@ -317,15 +317,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         //if(person1 <= 1)
            
-        if (gameState == 1) {
-            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, p1winBitmap);
-        }
-        else if (gameState == 2) {
-            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, p2winBitmap);
-        }
-        else if (gameState == 3) {
-            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, drawBitmap);
-        }
+        
 
             //계속진행
 
@@ -361,11 +353,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DeleteObject(BackBit);
         FillRect(backDC, &bufferRT, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
+        if (gameState == 1) {
+            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, p1winBitmap);
+        }
+        else if (gameState == 2) {
+            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, p2winBitmap);
+        }
+        else if (gameState == 3) {
+            DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, drawBitmap);
+        }
         
         // rect로 배경 범위 만들기. -> 범위 내 이동
         if(person < 2)
             DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, LodBitmap);
-        else
+        if(person == 2 && gameState == 0)
         {
             DrawBackground(hWnd, gameGround.left, gameGround.top, gameGround.right, gameGround.bottom, memDC, backDC, BGBitmap);
 
