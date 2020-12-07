@@ -1,5 +1,9 @@
 #include "winsock.h"
+#include "Resource.h"
+#include <CommCtrl.h>
 
+
+DWORD address;
 // 소켓 함수 오류 출력 후 종료
 void err_quit(const char* msg) {
 	LPVOID lpMsgBuf;
@@ -42,9 +46,10 @@ int recvn(SOCKET s, char* buf, int len, int flags) {
 	return (len - left);
 }
 
-SOCKET init_socket() {
+SOCKET init_socket(HINSTANCE hinst) {
 	int retval;
 
+	DialogBox(hinst, MAKEINTRESOURCE(IDD_DIALOG1),NULL,Dlg_Proc);
 	// 윈속 초기화
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
@@ -61,7 +66,7 @@ SOCKET init_socket() {
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
+	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP); //htonl(address);//inet_addr(SERVERIP);
 	serveraddr.sin_port = htons(SERVERPORT);
 	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit("connect()");
@@ -157,3 +162,22 @@ Bullet_Alive_Arr recv_Bullet_Alive(SOCKET sock) {
 	return bullet_ar;
 }
 
+
+BOOL CALLBACK Dlg_Proc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
+	switch (msg) {
+	case WM_INITDIALOG:
+		return TRUE;
+	case WM_COMMAND:
+		switch (wParam) {
+		case IDOK:
+			SendMessage(GetDlgItem(hDlg, IDC_IPADDRESS1), IPM_GETADDRESS, 0, (LPARAM)&address);
+			EndDialog(hDlg, IDOK);
+			return TRUE;;
+		case IDCANCEL:
+			EndDialog(hDlg, IDCANCEL);
+			return TRUE;;
+		}
+		return FALSE;
+	}
+	return FALSE;
+}

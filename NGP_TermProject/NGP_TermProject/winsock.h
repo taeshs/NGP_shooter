@@ -30,9 +30,12 @@ typedef struct Player_Socket
 void err_quit(const char* msg);
 void err_display(const char* msg);
 int recvn(SOCKET s, char* buf, int len, int flags);
-SOCKET init_socket();
+SOCKET init_socket(HINSTANCE);
 void send_Player(SOCKET sock, Player_Socket player);
 Player_Socket recv_Player(SOCKET sock);
+
+
+BOOL CALLBACK Dlg_Proc(HWND, UINT, WPARAM, LPARAM);
 
 struct Bullet_Arr {
 	Bullet arr[10];

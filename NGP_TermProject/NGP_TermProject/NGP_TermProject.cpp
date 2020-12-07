@@ -74,7 +74,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MyRegisterClass(hInstance);
 
     // 소켓 통신 스레드 생성
-    CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
+    CreateThread(NULL, 0, ClientMain, hInstance, 0, NULL);
 
     // 애플리케이션 초기화를 수행합니다:
     if (!InitInstance(hInstance, nCmdShow))
@@ -323,28 +323,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             //계속진행
 
-        if (clientid == 0 && start == false)
-        {
-            player.setPos(80.0f, 200.0f);
-            Other_Player.setPos(550.0f, 200.0f);
-            player.bitmap = P1Bitmap;
-            Other_Player.bitmap = P2Bitmap;
-            player.setHp(10);
-            Other_Player.setHp(10);
-
-            start = true;
-        }
-        else if (clientid == 1 && start == false)
-        {
-            player.setPos(550.0f, 200.0f);
-            Other_Player.setPos(80.0f, 200.0f);
-            player.bitmap = P2Bitmap;
-            Other_Player.bitmap = P1Bitmap;
-            player.setHp(10);
-            Other_Player.setHp(10);
-
-            start = true;
-        }
+        
 
         GetClientRect(hWnd, &bufferRT);
 
@@ -562,7 +541,28 @@ void Run(HWND hWnd) {
     LARGE_INTEGER tTIme;
     QueryPerformanceCounter(&tTIme);
 
+    if (clientid == 0 && start == false)
+    {
+        player.setPos(80.0f, 200.0f);
+        Other_Player.setPos(550.0f, 200.0f);
+        player.bitmap = P1Bitmap;
+        Other_Player.bitmap = P2Bitmap;
+        player.setHp(10);
+        Other_Player.setHp(10);
 
+        start = true;
+    }
+    else if (clientid == 1 && start == false)
+    {
+        player.setPos(550.0f, 200.0f);
+        Other_Player.setPos(80.0f, 200.0f);
+        player.bitmap = P2Bitmap;
+        Other_Player.bitmap = P1Bitmap;
+        player.setHp(10);
+        Other_Player.setHp(10);
+
+        start = true;
+    }
 
 
     g_fDeltaTime = (tTIme.QuadPart - g_tTime.QuadPart) / (float)g_tSecond.QuadPart;
@@ -791,7 +791,10 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 DWORD WINAPI ClientMain(LPVOID arg)
 {
     HANDLE hThread;
-    sock = init_socket();
+    HINSTANCE hInst = (HINSTANCE)arg;
+    sock = init_socket(hInst);
+
+
 
     hThread = CreateThread(NULL, 0, ProcessClient, 0, 0, NULL);
 
