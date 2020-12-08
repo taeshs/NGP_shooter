@@ -66,7 +66,7 @@ SOCKET init_socket(HINSTANCE hinst) {
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP); //htonl(address);//inet_addr(SERVERIP);
+	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);  //htonl(address); //inet_addr(SERVERIP); //htonl(address);//inet_addr(SERVERIP);
 	serveraddr.sin_port = htons(SERVERPORT);
 	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit("connect()");
