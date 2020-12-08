@@ -1,6 +1,4 @@
-﻿// NGP_TermProject.cpp : 애플리케이션에 대한 진입점을 정의합니다.
-//
-#include "framework.h"
+﻿#include "framework.h"
 #include "NGP_TermProject.h"
 #include "Global.h"
 #include "winsock.h"
@@ -11,13 +9,11 @@
 
 #define MAX_LOADSTRING 100
 
-// 전역 변수:
-HINSTANCE hInst;                                // 현재 인스턴스입니다.
-WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
-WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+HINSTANCE hInst;                                
+WCHAR szTitle[MAX_LOADSTRING];                  
+WCHAR szWindowClass[MAX_LOADSTRING];            
 
 
-//서버관련
 SOCKET sock;
 
 Player_Socket Player_socket;
@@ -26,7 +22,7 @@ Player_Socket Other_socket;
 
 DWORD WINAPI ClientMain(LPVOID);
 
-// 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
+
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -34,7 +30,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 HBITMAP DrawBackground(HWND, int, int, int, int, HDC, HDC, HBITMAP);
 HBITMAP DrawSkill(HWND, int, int, int, int, HDC, HDC, HBITMAP);
-//void DrawCharater(HWND, POINT, HDC, HDC, int);
+
 HBITMAP DrawCharater(HWND, Player, HDC, HDC, HBITMAP);
 void Run(HWND);
 
@@ -66,17 +62,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: 여기에 코드를 입력합니다.
 
-    // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_NGPTERMPROJECT, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
-    // 소켓 통신 스레드 생성
+
     CreateThread(NULL, 0, ClientMain, hInstance, 0, NULL);
 
-    // 애플리케이션 초기화를 수행합니다:
+
     if (!InitInstance(hInstance, nCmdShow))
     {
         return FALSE;
@@ -87,10 +81,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 
     QueryPerformanceFrequency(&g_tSecond); QueryPerformanceCounter(&g_tTime);
-    // 기본 메시지 루프입니다:
+
     while (1)
     {
-        //Sleep(10);
         if (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE))
         {
             if (msg.message == WM_QUIT)
@@ -105,20 +98,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             
 
     }
-    /*while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        
-        Run(msg.hwnd);
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-        else {
-            
-        }
-        
-    }*/
 
     // closesocket()
     //closesocket(sock);
@@ -130,12 +109,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 }
 
 
-
-//
-//  함수: MyRegisterClass()
-//
-//  용도: 창 클래스를 등록합니다.
-//
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEXW wcex;
@@ -157,19 +130,10 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     return RegisterClassExW(&wcex);
 }
 
-//
-//   함수: InitInstance(HINSTANCE, int)
-//
-//   용도: 인스턴스 핸들을 저장하고 주 창을 만듭니다.
-//
-//   주석:
-//
-//        이 함수를 통해 인스턴스 핸들을 전역 변수에 저장하고
-//        주 프로그램 창을 만든 다음 표시합니다.
-//
+
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+    hInst = hInstance; 
 
     HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
         0, 0, 800, 600, nullptr, nullptr, hInstance, nullptr);
@@ -185,18 +149,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     return TRUE;
 }
 
-//
-//  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  용도: 주 창의 메시지를 처리합니다.
-//
-//  WM_COMMAND  - 애플리케이션 메뉴를 처리합니다.
-//  WM_PAINT    - 주 창을 그립니다.
-//  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
-//
-//
-
-static POINT P1, P2;
 
 static Player player(80.0f, 200.0f), Other_Player(550.0f, 200.0f);            // P1 P2 -> PLAYER   OTHERPLAYER 변수이름 변경
 // 내번호가 0번이면 PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
@@ -208,10 +160,6 @@ RECT gameGround;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    
-    //BGBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP1));
-    //P1Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2));
-    //P2Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP3));
 
 
     switch (message)
@@ -231,12 +179,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         info1Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP11));
         info2Bitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP12));
 
-
-        //p1.setPos(60.0f, 200.0f);
-        //p2.setPos(550.0f, 200.0f);
-        P1.x = 60, P1.y = 200, P2.x = 550, P2.y = 200;
-        //static int nTime = 0;
-        SetTimer(hWnd, 0, 1000, NULL);
     }
     break;
     case WM_COMMAND:
@@ -262,17 +204,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
         case 0x31:
             player.setBullet(1);
-            //player.setHp(1);    ////////////////////////////////////////////////
             break;
 
         case 0x32:
             player.setBullet(2);
-            //player.setHp(5);    ////////////////////////////////////////////////
             break;
 
         case 0x33:
             player.setBullet(3);
-            //player.setHp(10);    ////////////////////////////////////////////////
             break;
         }
 
@@ -290,17 +229,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 player.subMp(player.getBulletCost());
             }
         }
-        //          
-
-
-        // if posx,y가 스킬1범위에 있을때
-        //            player.subMp(1) 로 마나 소모, 스킬실행
-
-         // if posx,y가 스킬2범위에 있을때
-        //            player.subMp(1) 로 마나 소모, 스킬실행
-
-         // if posx,y가 스킬3범위에 있을때
-        //            player.subMp(1) 로 마나 소모, 스킬실행
 
         break;
 
@@ -308,7 +236,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         PAINTSTRUCT ps;
         HDC hdc, memDC, backDC;
-        // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
         HBITMAP BackBit, oldBackBit;
 
         RECT bufferRT;
@@ -316,12 +243,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         hdc = BeginPaint(hWnd, &ps);
         memDC = CreateCompatibleDC(hdc);
         backDC = CreateCompatibleDC(hdc);
-
-        //if(person1 <= 1)
-           
-        
-
-            //계속진행
 
         
 
@@ -354,7 +275,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, drawBitmap);
         }
         
-        // rect로 배경 범위 만들기. -> 범위 내 이동
+
         if(person < 2)
             DrawBackground(hWnd, bufferRT.left, bufferRT.top, bufferRT.right, bufferRT.bottom, memDC, backDC, LodBitmap);
         if(person == 2 && gameState == 0)
@@ -392,7 +313,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
            }
            */
 
-           //test/////////////////////////////
 
            //empty mp bar
             Rectangle(backDC, 50, bufferRT.bottom - 100, bufferRT.right - 54, bufferRT.bottom - 50);
@@ -405,9 +325,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             myBrush = CreateSolidBrush(RGB(255, 0, 0));
             oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
-
-            //if (공격받을때) 
-            //player.subHp();
 
             float hpBlock = (((bufferRT.right - 200) / 2)) / 10;
 
@@ -430,9 +347,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             ///hp bar
             //////////
-
-            //Rectangle(backDC, bufferRT.right - 150, 50, bufferRT.right - 50, bufferRT.bottom - 100);// 440);// 
-            // skill bar
 
             myBrush = CreateSolidBrush(RGB(0, 255, 0));
             oldBrush = (HBRUSH)SelectObject(backDC, myBrush);
@@ -467,8 +381,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
 
             }
-            
-            // 임시 총알 
 
 
             SelectObject(backDC, oldPen);
@@ -477,11 +389,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             DeleteObject(myBrush);
 
 
-            //쓰고난 펜을 삭제해준다.
             DeleteObject(myPen);
             DeleteObject(myBrush);
 
-            //test//////////////////////////////// 
         }
 
         BitBlt(hdc, 0, 0, bufferRT.right, bufferRT.bottom, backDC, 0, 0, SRCCOPY);
@@ -496,11 +406,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DeleteDC(backDC);
         DeleteDC(memDC);
         EndPaint(hWnd, &ps);
-
-
-        //DeleteObject(BGBitmap);
-        //DeleteObject(P1Bitmap);
-        //DeleteObject(P2Bitmap);
         
     }
     break;
@@ -515,7 +420,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// 정보 대화 상자의 메시지 처리기입니다.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);
@@ -637,10 +541,7 @@ void Run(HWND hWnd) {
         if (player.bullets[i].alive)
             player.bullets[i].update(g_fDeltaTime, gameGround);
     }
-    //일단 받아서 그리는걸로 하고, 이동이 어색하면 경로 받아서 같이 업데이트 시키는 방식으로.
 
-    //Player_socket.posX = player.getX();
-    //Player_socket.posX = player.getY();
 
     InvalidateRect(hWnd, NULL, FALSE);
 }
@@ -678,8 +579,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         closesocket(sock);
     }
     printf("-> 클라 아이디 (번호): %d\n", clientid);
-    //PLAYER.SETPOS((80.0f, 200.0f)), OTHERPLAYER.SETPOS(550.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p2bitmap
-    // 내번호가 1번이면 PLAYER.SETPOS((550.0f, 200.0f)), OTHERPLAYER.SETPOS(80.0f, 200.0f); player bitmap -> p1bitmap ,  otherplayer bitmap -> p1bitmap
+
     int playerNo = -1;
     if (clientid == 0) {
         playerNo = PLAYER_NUMBER_1;
@@ -703,14 +603,6 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         }
         printf("-> 클라 아이디 (번호): %d\n", person);
     }
-    /*if (person == 2) {
-        retval = recv(sock, (char*)&person, sizeof(person), 0);
-        if (retval == SOCKET_ERROR) {
-            err_display("recv()");
-            closesocket(sock);
-        }
-        printf("-> 클라 아이디 (번호): %d\n", person);
-    }*/
     
 
 
@@ -739,11 +631,8 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
 
         Player_socket = recv_Player(sock);
-        //Player_Bullet = recv_Bullet(sock);
 
 
-
-        //player.setHp(Player_socket.hp);
         
         Bullet_Alive_Arr en_aArr, pl_aArr;
         en_aArr = recv_Bullet_Alive(sock);
@@ -766,16 +655,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         }
        
         
-        
-
-        
-
-        //player.setHp(5);
-
-
-        //Other_Player = recv_Player(sock);          // 받은 정보로 otherplayer set.
-
-        //p2.setPos(server_Player.Players->posX, server_Player.Players->posY);
+       
 
         retval = recvn(sock, (char*)&gameState, sizeof(gameState), 0);
         if (retval == SOCKET_ERROR) {
@@ -787,7 +667,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     return 0;
 }
 
-// TCP 클라이언트 시작 부분
+
 DWORD WINAPI ClientMain(LPVOID arg)
 {
     HANDLE hThread;
@@ -827,4 +707,3 @@ Bullet_Arr arr_to_struct(Bullet* arr) {
     str.arr[9].alive = arr[9].alive;
     return str;
 }
-// 만약에 받은 플레이어 번호가 0번이면 1P -> 

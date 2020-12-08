@@ -50,11 +50,11 @@ SOCKET init_socket(HINSTANCE hinst) {
 	int retval;
 
 	DialogBox(hinst, MAKEINTRESOURCE(IDD_DIALOG1),NULL,Dlg_Proc);
-	// 윈속 초기화
+
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
 	}
-	// socket()
+
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == INVALID_SOCKET) err_quit("socket()");
 
@@ -62,17 +62,15 @@ SOCKET init_socket(HINSTANCE hinst) {
 	BOOL optval = TRUE;
 	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&optval, sizeof(optval));
 
-	// connect()
+
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = htonl(address); //inet_addr(SERVERIP);  //htonl(address); //inet_addr(SERVERIP); //htonl(address);//inet_addr(SERVERIP);
+	serveraddr.sin_addr.s_addr = htonl(address); //inet_addr(SERVERIP); 
 	serveraddr.sin_port = htons(SERVERPORT);
 	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit("connect()");
 
-
-	//printf("[알림] %s:%d 정상적으로 연결 되었습니다..!\n", IPaddres, SERVERPORT);
 	return sock;
 }
 
@@ -80,9 +78,6 @@ SOCKET init_socket(HINSTANCE hinst) {
 void send_Player(SOCKET sock, Player_Socket player) {
 	int retval;
 
-	// 데이터 보내기( 구조체 크기를 먼저 보낸다. )
-
-	// 데이터 보내기( 구조체 데이터를 보낸다. )
 	retval = send(sock, (char*)&player, sizeof(Player_Socket), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
@@ -100,11 +95,10 @@ Player_Socket recv_Player(SOCKET sock) {
 	GetSize = recv(sock, Buffer, sizeof(Player_Socket), 0);
 	if (GetSize == SOCKET_ERROR) {
 		err_quit("RECV()");
-		//MessageBox(NULL,"error", "연결이ㅁㅁ 끊어졌습니다", 0);
 		exit(1);
 	}
 
-	Buffer[GetSize] = '\0'; // 마지막 버퍼 비워줌
+	Buffer[GetSize] = '\0'; 
 	player = (Player_Socket*)Buffer;
 
 	return *player;
@@ -114,14 +108,13 @@ Player_Socket recv_Player(SOCKET sock) {
 void send_Bullet(SOCKET sock, Bullet_Arr bullet) {
 	int retval;
 
-	// 데이터 보내기( 구조체 데이터를 보낸다. )
 	retval = send(sock, (char*)&bullet, sizeof(Bullet_Arr), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 		exit(1);
 	}
 }
-//char Buffer2[BUFSIZE];
+
 
 Bullet_Arr recv_Bullet(SOCKET sock) {
 	int retval;

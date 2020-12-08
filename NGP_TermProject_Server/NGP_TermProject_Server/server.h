@@ -64,7 +64,6 @@ struct Bullet {
     BoundingBox GetBB() { return bb; }
 
     void update(float deltaTime, RECT gameGround) {
-        //面倒贸府 秦拎具窃.
         bPosX += shootDir.x * bSpeed * deltaTime;
         if (bPosX > gameGround.right + 40 || bPosX < gameGround.left) {
             alive = false;
@@ -84,13 +83,3 @@ struct Bullet_Arr {
 struct Bullet_Alive_Arr {
     int arr[10];
 };
-
-
-///
-/// gamestate 傈价秦林扁
-/// 面倒贸府 秦林扁
-/// 
-/// 
-/// 
-/// 
-/// 

@@ -1,6 +1,6 @@
 #pragma once
 
-#define _WINSOCK_DEPRECATED_NO_WARNINGS // 최신 VC++ 컴파일 시 경고 방지
+#define _WINSOCK_DEPRECATED_NO_WARNINGS 
 #pragma comment(lib, "ws2_32")
 #include <winsock2.h>
 #include <stdlib.h>
@@ -24,9 +24,6 @@ typedef struct Player_Socket
 #pragma pack(pop)
 
 
-//Server_Player server_Player;
-
-//서버관련
 void err_quit(const char* msg);
 void err_display(const char* msg);
 int recvn(SOCKET s, char* buf, int len, int flags);
@@ -53,4 +50,3 @@ void send_Bullet_Alive(SOCKET sock, Bullet_Alive_Arr bullet);
 
 Bullet_Alive_Arr recv_Bullet_Alive(SOCKET sock);
 
-//extern char IPaddres[MAX_PATH];

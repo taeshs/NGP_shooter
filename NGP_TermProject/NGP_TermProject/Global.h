@@ -1,5 +1,4 @@
 #pragma once
-//#include "profileapi.h"
 #include "framework.h"
 
 
@@ -59,7 +58,6 @@ struct Bullet {
     BoundingBox GetBB() { return bb; }
 
     void update(float deltaTime, RECT gameGround) {
-        //面倒贸府 秦拎具窃.
         bPosX += shootDir.x * bSpeed * deltaTime;
         if (bPosX > gameGround.right + 40 || bPosX < gameGround.left) {
             alive = false;

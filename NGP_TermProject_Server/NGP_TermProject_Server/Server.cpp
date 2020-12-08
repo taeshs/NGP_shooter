@@ -1,4 +1,4 @@
-#define _WINSOCK_DEPRECATED_NO_WARNINGS // 최신 VC++ 컴파일 시 경고 방지
+#define _WINSOCK_DEPRECATED_NO_WARNINGS 
 #pragma comment(lib, "ws2_32")
 #include <winsock2.h>
 #include <stdlib.h>
@@ -8,7 +8,6 @@
 
 using namespace std;
 
-// #define SERVERPORT 8200 -> 8200 쓰면 bind오류떠서 일단 9000으로 바꿨다 ㅠ 
 #define SERVERPORT 9000
 #define BUFSIZE    512000
 
@@ -26,7 +25,7 @@ void send_Bullet_Alive(SOCKET sock, Bullet_Alive_Arr bullet);
 Bullet_Alive_Arr recv_Bullet_Alive(SOCKET sock);
 
 DWORD WINAPI ProcessClient(LPVOID);
-//Client_Player recv_Player(SOCKET sock);
+
 
 Bullet_Arr arr_to_struct(Bullet* arr);
 Bullet* struct_to_arr(Bullet_Arr str);
@@ -101,8 +100,6 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
 
     int m_no=no++;
     int enemy_no = m_no == 0 ? 1 : 0;
-    //int threadId = GetCurrentThreadId();
-    //printf("스레드 생성 : %d\n", threadId);
 
     SOCKET client_sock = (SOCKET)arg;
     int retval;
@@ -110,13 +107,12 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     int addrlen;
 
 
-    // 클라이언트 정보
+
     addrlen = sizeof(clientaddr);
     getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 
     printf("%d번째 클라이언트 입니다", m_no + 1);
 
-    // 인원체크
     if (no >= 3) {
         closesocket(client_sock);
         printf("클라이언트 종료: IP 주소=%s, 포트 번호=%d [인원 초과]\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
@@ -128,7 +124,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         err_display("recv()");
         closesocket(client_sock);
     }
-    //printf("-> 클라 아이디 (번호): %d\n", m_no);
+
 
     retval = send(client_sock, (char*)&no, sizeof(no), 0);
     if (retval == SOCKET_ERROR) {
@@ -146,7 +142,6 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         printf("-> 클라 아이디 (번호): %d\n", no);
 
     }
-    /**/
     if (no == 2) {
         retval = send(client_sock, (char*)&no, sizeof(no), 0);
         if (retval == SOCKET_ERROR) {
@@ -158,7 +153,6 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     
 
     while (1) {
-        //printf("%d번 루프 시작\n", m_no);
         int retval;
         int buf;
         int GetSize;
@@ -173,27 +167,16 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
             exit(1);
         }
 
-        Buffer[m_no][GetSize] = '\0'; // 마지막 버퍼 비워줌
+        Buffer[m_no][GetSize] = '\0'; 
         player = (Player_Socket*)Buffer[m_no];
 
 
-        /// <summary>
-        ///  Player[0]; Player[1];
-        /// Player[0] - Player[1]send ;
-        /// 
-        /// </summary>
+
 
         Player[m_no].posX = player->posX;
         Player[m_no].posY = player->posY;
         Player[m_no].hp = player->hp;
         Player[m_no].bb = player->bb;
-      
-        //printf("0 : (%d, %d), hp : (%d) \n", Player[0].posX, Player[0].posY, Player[0].hp);
-
-        //printf("1 : (%d, %d), hp : (%d) \n", Player[1].posX, Player[1].posY, Player[1].hp);
-
-        //int retval;
-        // 데이터 보내기( 구조체 크기를 먼저 보낸다. )
 
 
 
@@ -207,33 +190,20 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
         for (int i = 0; i < 10; i++) {
             if (Bullets[enemy_no].arr[i].alive) {
                 if (collisionCheck(Player[m_no].bb, Bullets[enemy_no].arr[i].GetBB())) {
-                    Bullets[enemy_no].arr[i].alive = false;     // 방식 바꿔야함.
+                    Bullets[enemy_no].arr[i].alive = false;     
                     aArr[enemy_no].arr[i] = 1;
-                    //Player[m_no].hp -= str.arr[i].bDamage;
                 }
             }
-            // 충돌처리 이제 player[내꺼]랑  변환(bullet[상대꺼]) 이랑 충돌체크 해서 총알은 죽이고 플레이어는 피달게
         }
 
         send_Player(client_sock, Player[enemy_no]);
         send_Bullet(client_sock, Bullets[enemy_no]);
 
         send_Player(client_sock, Player[m_no]);
-        //send_Bullet(client_sock, Bullets[m_no]);
 
         send_Bullet_Alive(client_sock, aArr[enemy_no]);
         send_Bullet_Alive(client_sock, aArr[m_no]);
 
-        //if(Bullets[m_no]->bPosX > 0)
-         //   printf("%d 번 총알 %f\n ", m_no, Bullets[m_no]->bPosX);
-
-        /* 충돌처리 */
-
-        //str = m_no == 0 ? Bullets[1] : Bullets[0];
-
-        
-
-        /* 충돌처리 */
 
         int gameState;
         if (Player[0].hp <= 0) {
@@ -254,12 +224,10 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
             err_display("recv()");
             closesocket(client_sock);
         }
-        //printf("-> game state : %d\n", gameState);
-        
-        // 게임 오버 체크 
+
     }
 
-    // closesocket()
+
     closesocket(client_sock);
     printf("스레드 종료 : %d\n[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n\n", m_no,
         inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
@@ -353,7 +321,7 @@ void send_Bullet(SOCKET sock, Bullet_Arr bullet) {
         exit(1);
     }
 }
-//char Buffer2[BUFSIZE];
+
 
 Bullet_Arr recv_Bullet(SOCKET sock) {
     int retval;
@@ -379,7 +347,6 @@ void send_Bullet_Alive(SOCKET sock, Bullet_Alive_Arr bullet_al) {
         exit(1);
     }
 }
-//char Buffer2[BUFSIZE];
 
 Bullet_Alive_Arr recv_Bullet_Alive(SOCKET sock) {
     int retval;
@@ -426,14 +393,6 @@ Client_Player recv_Player(SOCKET sock) {
 
 
 
-/*
-전역변수로 스레드 생성시 변수 증가, 그 변수를 인덱스로 배열에 플레이어 구조체 저장, 
-저장된 구조체 교환해서 전송 
-
-
-차후 충돌체크?
-
-*/
 
 
 bool collisionCheck(BoundingBox a, BoundingBox b) {
